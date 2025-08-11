@@ -59,6 +59,8 @@
   # Install firefox.
   programs.firefox.enable = true;
 
+  programs.bash.interactiveShellInit = ''eval "$(direnv hook bash)"'';
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -71,5 +73,10 @@
     curl
     wget
     # Add more common system packages here
+    direnv
   ];
+  environment.variables = {
+    EDITOR = "hx";
+    VISUAL = "hx";
+  };
 }

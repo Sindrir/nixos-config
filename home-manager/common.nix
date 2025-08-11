@@ -24,6 +24,17 @@
       gitui
       lazygit
       networkmanagerapplet
+      usbutils
+      fnm
+      devbox
+      pre-commit
+      posting
+      xclip
+      fx
+      ripgrep
+      gnumake
+      unzip
+      gcc
 
       # Shell
       fish
@@ -37,16 +48,24 @@
 
       ## LSP
       kotlin-language-server
+      yaml-language-server
+      nginx-language-server
       lua-language-server
       marksman # Markdowm
       nil # Nix
       nixpkgs-fmt # Nix formatting
+
+      rustup
+      
 
       # GUI applications
       ## Comms
       teams-for-linux
       slack
       vesktop # Discord client with proper wayland support
+      ungoogled-chromium
+      inkscape
+      mongodb-compass
 
       ## Gaming
       #steam
@@ -64,6 +83,8 @@
       neovim
       zed-editor
       jetbrains-toolbox
+      ## Java heap tool
+      visualvm
 
       ## DB
       mongodb-compass
@@ -82,12 +103,36 @@
       pavucontrol
     ];
     file = {
-       ".config/fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish;
-       ".config/wezterm".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm;
-       ".config/helix".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix;
+      ".config/fish" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/fish";
+        recursive = true;
+      };
+      ".config/helix" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/helix";
+        recursive = true;
+      };
+      ".config/wezterm" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/wezterm";
+        recursive = true;
+      };
+      ".config/starship.toml" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/starship/starship.toml";
+      };
+      ".config/nvim" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/nvim";
+        recursive = true;
+      };
+      
+#       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
+#       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
+#       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;
+#       ".config/fish/config.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/config.fish;
+#       ".config/fish/fish_variables".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/fish_variables;
+#       ".config/helix/config.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/config.toml;
+#       ".config/helix/languages.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/languages.toml;
+#       ".config/wezterm/wezterm.lua".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm/wezterm.lua;
     };
     sessionVariables = {
-      EDITOR = "hx";
       BROWSER = "firefox";
     };
   };
@@ -96,9 +141,20 @@
     wezterm = {
       enable = true;
       #package = (config.lib.nixGL.wrap inputs.wezterm.packages.${pkgs.system}.default);
-      package = inputs.wezterm.packages.${pkgs.system}.default;
+      #package = inputs.wezterm.packages.${pkgs.system}.default;
     };
     bottom.enable = true;
+  };
+  xdg.desktopEntries.mongodb-compass = {
+    name = "MongoDB Compass";
+    comment = "The MongoDB GUI";
+    genericName = "MongoDB Compass";
+    exec = "mongodb-compass %u --password-store=\"gnome-libsecret\" --ignore-additional-command-line-flags";
+    icon = "mongodb-compass";
+    type = "Application";
+    startupNotify = true;
+    categories = ["GNOME" "GTK" "Utility"];
+    mimeType = ["x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv"];
   };
   #nixGL = {
   #  packages = import nixgl {inherit pkgs;};
