@@ -13,6 +13,8 @@
     homeDirectory = "/home/sindreo";
     stateVersion = "25.05";
     packages = with pkgs; [
+      # <HOME>
+
       # CLI
       wget
       eza
@@ -83,6 +85,10 @@
       neovim
       zed-editor
       jetbrains-toolbox
+
+      ## API Client
+      yaak
+      
       ## Java heap tool
       visualvm
 

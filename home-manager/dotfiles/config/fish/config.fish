@@ -1,6 +1,14 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
 end
+function ne
+    $EDITOR ~/nixos-config
+end
+function ni
+    set tag (count $argv) >/dev/null; and set tag $argv[1]; or set tag '<HOME>'
+    grep -n "$tag" nixos-config/home-manager/common.nix | grep -o -P '\d+' | xargs -I % $EDITOR +% nixos-config/home-manager/common.nix
+end
+complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
 alias k="kubectl"
 alias nurse="sudo nixos-rebuild switch --flake /home/sindreo/nixos-config#work-laptop"
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
