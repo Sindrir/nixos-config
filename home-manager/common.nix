@@ -37,6 +37,10 @@
       gnumake
       unzip
       gcc
+      s3fs
+      mountpoint-s3
+      jq
+      lsof
 
       # Shell
       fish
@@ -68,9 +72,6 @@
       ungoogled-chromium
       inkscape
       mongodb-compass
-
-      ## Gaming
-      #steam
 
       ## Music
       spotify
@@ -151,6 +152,7 @@
     };
     bottom.enable = true;
   };
+  # Custom desktop entry for MongoDB Compass for compability with keyring
   xdg.desktopEntries.mongodb-compass = {
     name = "MongoDB Compass";
     comment = "The MongoDB GUI";

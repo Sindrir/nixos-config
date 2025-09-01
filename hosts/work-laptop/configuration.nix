@@ -78,6 +78,7 @@
   environment.systemPackages = with pkgs; [
     cifs-utils
     lshw
+    wrapGAppsHook4
 #    # System / WM
 #    gnomeExtensions.paperwm
 #
