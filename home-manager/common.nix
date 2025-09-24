@@ -26,6 +26,7 @@
       gitui
       lazygit
       networkmanagerapplet
+      networkmanager-openconnect
       usbutils
       fnm
       devbox
@@ -41,6 +42,7 @@
       mountpoint-s3
       jq
       lsof
+      sshfs
 
       # Shell
       fish
@@ -60,10 +62,8 @@
       marksman # Markdowm
       nil # Nix
       nixpkgs-fmt # Nix formatting
-
       rustup
-      
-
+    
       # GUI applications
       ## Comms
       teams-for-linux
@@ -72,6 +72,7 @@
       ungoogled-chromium
       inkscape
       mongodb-compass
+      vlc
 
       ## Music
       spotify
@@ -86,6 +87,11 @@
       neovim
       zed-editor
       jetbrains-toolbox
+      kiro
+      # jetbrains.idea-ultimate
+
+      ## JDK
+      # jdk
 
       ## API Client
       yaak

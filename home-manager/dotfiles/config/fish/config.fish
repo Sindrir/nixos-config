@@ -26,3 +26,5 @@ function y
     end
     rm -f -- "$tmp"
 end
+
+string match -q "$TERM_PROGRAM" "kiro" and . (kiro --locate-shell-integration-path fish)
