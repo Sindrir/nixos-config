@@ -2,6 +2,9 @@
 
 {
 
+  imports = [
+    ./jetbrains-nix-ld-fix.nix
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
