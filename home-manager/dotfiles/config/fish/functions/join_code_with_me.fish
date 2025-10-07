@@ -13,5 +13,5 @@ function join_code_with_me
     else
         set session_id $input
     end
-    steam-run bash -c "(wget -nv -O- 'https://code-with-me.global.jetbrains.com/$session_id/cwm-client-launcher-linux.sh'?arch_type=(uname -m))"
+    steam-run bash -c "$(wget -nv -O- "https://code-with-me.global.jetbrains.com/$session_id/cwm-client-launcher-linux.sh?arch_type=$(uname -m)")"
 end
