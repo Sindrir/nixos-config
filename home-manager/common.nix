@@ -43,6 +43,9 @@
       jq
       lsof
       sshfs
+      jwt-cli
+      presenterm
+      steam-run
 
       # Shell
       fish
@@ -73,12 +76,18 @@
       inkscape
       mongodb-compass
       vlc
+      remmina
 
       ## Music
       spotify
 
       ## General
       nordpass # Password manager
+
+      ## MISC
+      gtk3
+      gtk4
+      webkitgtk_4_1
 
       # Programming
       ## Editors
