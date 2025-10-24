@@ -17,6 +17,7 @@
 
       # CLI
       wget
+      google-cloud-sdk-gce
       eza
       bat
       neofetch
@@ -77,6 +78,7 @@
       mongodb-compass
       vlc
       remmina
+      gimp
 
       ## Music
       spotify
@@ -124,6 +126,7 @@
       ## Sound settings
       pavucontrol
     ];
+
     file = {
       ".config/fish" = {
         source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/fish";
@@ -144,7 +147,12 @@
         source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/nvim";
         recursive = true;
       };
-      
+      ".config/hypr/hyprland.conf" = {
+        source = ./dotfiles/config/hypr/hyprland.conf;
+      };
+      ".config/hypr/hyprpaper.conf" = {
+        source = ./dotfiles/config/hypr/hyprpaper.conf;
+      };
 #       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
 #       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
 #       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;

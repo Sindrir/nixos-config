@@ -1,11 +1,13 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
 
-  imports = [
-    ./jetbrains-nix-ld-fix.nix
-  ];
+  #imports = [
+  #  ./jetbrains-nix-ld-fix.nix
+  #];
 
+  # Cosmic Greeter as standard login screen
+  services.displayManager.cosmic-greeter.enable = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Enable networking
