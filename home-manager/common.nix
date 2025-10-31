@@ -47,6 +47,10 @@
       jwt-cli
       presenterm
       steam-run
+      codex
+      gemini-cli
+      opencode
+      claude-code
 
       # Shell
       fish
