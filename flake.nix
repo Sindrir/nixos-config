@@ -27,6 +27,7 @@
     }:
     let
       system = "x86_64-linux";
+      inherit (nixpkgs) lib;
       pkgs = nixpkgs.legacyPackages.${system};
       #overlays = [inputs.nixgl.overlay];
       allowUnfree = true;
@@ -43,6 +44,21 @@
     in
     {
       packages.${system}.my-neovim = customNeovim.neovim;
+
+      checks.${system} = {
+        nixpkgs-fmt = pkgs.runCommand "check-nixpkgs-fmt" { } ''
+          ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check ${./.}
+          touch $out
+        '';
+        statix = pkgs.runCommand "check-statix" { } ''
+          ${pkgs.statix}/bin/statix check ${./.}
+          touch $out
+        '';
+        deadnix = pkgs.runCommand "check-deadnix" { } ''
+          ${pkgs.deadnix}/bin/deadnix ${./.}
+          touch $out
+        '';
+      };
       # use "nixos", or your hostname as the name of the configuration
       # it's a better practice than "default" shown in the video
 

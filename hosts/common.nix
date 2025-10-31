@@ -6,12 +6,23 @@
   #  ./jetbrains-nix-ld-fix.nix
   #];
 
-  # Cosmic Greeter as standard login screen
-  services.displayManager.cosmic-greeter.enable = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  # Enable firewall
+  networking.firewall.enable = true;
+
+  # Nix maintenance
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+    optimise.automatic = true;
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
@@ -31,35 +42,33 @@
     LC_TIME = "nb_NO.UTF-8";
   };
 
+  services = {
+    displayManager.cosmic-greeter.enable = true;
+    xserver.xkb = {
+      layout = "no";
+      variant = "winkeys";
+    };
+    printing.enable = true;
+    pulseaudio.enable = false;
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+      # If you want to use JACK applications, uncomment this
+      #jack.enable = true;
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "no";
-    variant = "winkeys";
+      # use the example session manager (no others are packaged yet so this is enabled by default,
+      # no need to redefine it in your config for now)
+      #media-session.enable = true;
+    };
   };
+
+  # Enable realtime scheduling for PipeWire
+  security.rtkit.enable = true;
 
   # Configure console keymap
   console.keyMap = "no";
-
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
 
   # Install firefox.
   programs.firefox.enable = true;

@@ -6,7 +6,8 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../common.nix
     ];
@@ -17,11 +18,6 @@
   };
   hardware = {
     graphics.enable = true;
-    opengl = {
-      enable = true;
-      #driSupport = true;
-      #driSupport32bit = true;
-    };
     nvidia = {
       modesetting.enable = true;
       open = true;
@@ -29,13 +25,13 @@
     };
   };
 
-  services.xserver.videoDrivers = ["nvidia"];
-  
+
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "home-desktop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   users.users.sindreo = {
@@ -50,15 +46,14 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services = {
+    xserver = {
+      videoDrivers = [ "nvidia" ];
+      enable = true;
+    };
+    desktopManager.cosmic.enable = true;
+    printing.enable = true;
+  };
 
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -77,7 +72,6 @@
     heroic
   ];
   programs = {
-    niri.enable = true;
     steam = {
       enable = true;
       gamescopeSession.enable = true;

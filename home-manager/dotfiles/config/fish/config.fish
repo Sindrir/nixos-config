@@ -10,7 +10,10 @@ function ni
 end
 complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' ~/nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
 alias k="kubectl"
-alias nurse="sudo nixos-rebuild switch --flake /home/sindreo/nixos-config#work-laptop"
+function nurse
+    nix flake check /home/sindreo/nixos-config
+    sudo nixos-rebuild switch --flake /home/sindreo/nixos-config#work-laptop
+end
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
 alias ll="eza -l --icons --group-directories-first"
 alias ls="eza --icons --group-directories-first"

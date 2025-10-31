@@ -70,8 +70,10 @@
       marksman # Markdowm
       nil # Nix
       nixpkgs-fmt # Nix formatting
+      statix # Nix linter
+      deadnix # Dead code finder
       rustup
-    
+
       # GUI applications
       ## Comms
       teams-for-linux
@@ -110,7 +112,7 @@
 
       ## API Client
       yaak
-      
+
       ## Java heap tool
       visualvm
 
@@ -133,22 +135,22 @@
 
     file = {
       ".config/fish" = {
-        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/fish";
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish;
         recursive = true;
       };
       ".config/helix" = {
-        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/helix";
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix;
         recursive = true;
       };
       ".config/wezterm" = {
-        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/wezterm";
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm;
         recursive = true;
       };
       ".config/starship.toml" = {
-        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/starship/starship.toml";
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/starship/starship.toml;
       };
       ".config/nvim" = {
-        source = config.lib.file.mkOutOfStoreSymlink "/home/sindreo/nixos-config/home-manager/dotfiles/config/nvim";
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/nvim;
         recursive = true;
       };
       ".config/hypr/hyprland.conf" = {
@@ -157,14 +159,31 @@
       ".config/hypr/hyprpaper.conf" = {
         source = ./dotfiles/config/hypr/hyprpaper.conf;
       };
-#       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
-#       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
-#       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;
-#       ".config/fish/config.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/config.fish;
-#       ".config/fish/fish_variables".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/fish_variables;
-#       ".config/helix/config.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/config.toml;
-#       ".config/helix/languages.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/languages.toml;
-#       ".config/wezterm/wezterm.lua".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm/wezterm.lua;
+      # AI Agents symlinks (all point to the same shared config folder)
+      ".config/opencode" = {
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        recursive = true;
+      };
+      ".config/claude-code" = {
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        recursive = true;
+      };
+      ".config/gemini-cli" = {
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        recursive = true;
+      };
+      ".config/codex" = {
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        recursive = true;
+      };
+      #       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
+      #       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
+      #       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;
+      #       ".config/fish/config.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/config.fish;
+      #       ".config/fish/fish_variables".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/fish_variables;
+      #       ".config/helix/config.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/config.toml;
+      #       ".config/helix/languages.toml".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix/languages.toml;
+      #       ".config/wezterm/wezterm.lua".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm/wezterm.lua;
     };
     sessionVariables = {
       BROWSER = "firefox";
@@ -188,8 +207,8 @@
     icon = "mongodb-compass";
     type = "Application";
     startupNotify = true;
-    categories = ["GNOME" "GTK" "Utility"];
-    mimeType = ["x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv"];
+    categories = [ "GNOME" "GTK" "Utility" ];
+    mimeType = [ "x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv" ];
   };
   #nixGL = {
   #  packages = import nixgl {inherit pkgs;};
