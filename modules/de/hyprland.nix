@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
   # Enable Hyprland Wayland compositor
   programs.hyprland.enable = true;

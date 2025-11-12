@@ -1,10 +1,11 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
 
-  #imports = [
-  #  ./jetbrains-nix-ld-fix.nix
-  #];
+  imports = [
+    ../modules/flatpak.nix
+    #  ./jetbrains-nix-ld-fix.nix
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -43,6 +44,7 @@
   };
 
   services = {
+    flatpak.enable = true;
     displayManager.cosmic-greeter.enable = true;
     xserver.xkb = {
       layout = "no";
@@ -64,6 +66,15 @@
     };
   };
 
+  # Commented out, trying declarative approach https://www.reddit.com/r/NixOS/comments/1hzgxns/fully_declarative_flatpak_management_on_nixos/
+  #systemd.services.flatpak-repo = {
+  #  wantedBy = [ "multi-user.target" ];
+  #  path = [ pkgs.flatpak ];
+  #  script = ''
+  #    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  #  '';
+  #};
+
   # Enable realtime scheduling for PipeWire
   security.rtkit.enable = true;
 
@@ -78,7 +89,13 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    docker.enable = true;
+    #    podman = {
+    #      enable = true;
+    #      dockerCompat = true;
+    #    };
+  };
 
   environment.systemPackages = with pkgs; [
     git

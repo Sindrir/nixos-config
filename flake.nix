@@ -20,18 +20,14 @@
       #self,
       nixpkgs
     , nvf
-    , wezterm
     , home-manager
     , #nixgl,
       ...
     }:
     let
       system = "x86_64-linux";
-      inherit (nixpkgs) lib;
       pkgs = nixpkgs.legacyPackages.${system};
       #overlays = [inputs.nixgl.overlay];
-      allowUnfree = true;
-      allowUnfreePredicate = pkg: true;
       configModule = {
         config.vim = {
           theme.enable = true;
@@ -55,7 +51,7 @@
           touch $out
         '';
         deadnix = pkgs.runCommand "check-deadnix" { } ''
-          ${pkgs.deadnix}/bin/deadnix ${./.}
+          ${pkgs.deadnix}/bin/deadnix --fail ${./.}
           touch $out
         '';
       };

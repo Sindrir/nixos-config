@@ -10,8 +10,17 @@ function ni
 end
 complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' ~/nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
 alias k="kubectl"
+
+function nurse-fix
+    nixpkgs-fmt /home/sindreo/nixos-config
+    statix fix /home/sindreo/nixos-config
+    deadnix -e /home/sindreo/nixos-config
+end
 function nurse
-    nix flake check /home/sindreo/nixos-config
+    if not nix flake check /home/sindreo/nixos-config
+        echo "Use `nurse-fix` to automatically fix issues."
+        return 1
+    end
     sudo nixos-rebuild switch --flake /home/sindreo/nixos-config#work-laptop
 end
 alias furse="nix flake update --flake /home/sindreo/nixos-config"

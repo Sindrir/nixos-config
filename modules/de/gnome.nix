@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+_:
 {
   services.desktopManager.gnome.enable = true;
 }

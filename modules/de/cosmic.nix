@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+_:
 {
   services.desktopManager.cosmic.enable = true;
   environment.sessionVariables = {

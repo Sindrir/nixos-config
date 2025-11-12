@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
   xdg = {
@@ -17,6 +17,7 @@
 
       # CLI
       wget
+      awscli2
       google-cloud-sdk-gce
       eza
       bat
@@ -51,6 +52,8 @@
       gemini-cli
       opencode
       claude-code
+      distrobox
+      distrobox-tui
 
       # Shell
       fish
@@ -92,10 +95,18 @@
       ## General
       nordpass # Password manager
 
+      ## Web
+      nyxt
+      vivaldi
+      vivaldi-ffmpeg-codecs
+      # zen # Not yet packaged for nix
+
       ## MISC
       gtk3
       gtk4
       webkitgtk_4_1
+      xdg-desktop-portal-gtk
+      quick-webapps
 
       # Programming
       ## Editors
@@ -105,6 +116,7 @@
       zed-editor
       jetbrains-toolbox
       kiro
+      vscode
       # jetbrains.idea-ultimate
 
       ## JDK
@@ -197,6 +209,39 @@
       #package = inputs.wezterm.packages.${pkgs.system}.default;
     };
     bottom.enable = true;
+    nushell = {
+      enable = true;
+      extraConfig = ''
+        let carapace_completer = {|spans|
+        carapace $spans.0 nushell ...$spans | from json
+        }
+        $env.config = {
+         show_banner: false,
+         completions: {
+         case_sensitive: false # case-sensitive completions
+         quick: true    # set to false to prevent auto-selecting completions
+         partial: true    # set to false to prevent partial filling of the prompt
+         algorithm: "fuzzy"    # prefix or fuzzy
+         external: {
+         # set to false to prevent nushell looking into $env.PATH to find more suggestions
+             enable: true 
+         # set to lower can improve completion performance at the cost of omitting some options
+             max_results: 100 
+             completer: $carapace_completer # check 'carapace_completer' 
+           }
+         }
+        } 
+        $env.PATH = ($env.PATH | 
+        split row (char esep) |
+        prepend /home/myuser/.apps |
+        append /usr/bin/env
+        )
+      '';
+    };
+    carapace = {
+      enable = true;
+      enableNushellIntegration = true;
+    };
   };
   # Custom desktop entry for MongoDB Compass for compability with keyring
   xdg.desktopEntries.mongodb-compass = {
@@ -209,6 +254,20 @@
     startupNotify = true;
     categories = [ "GNOME" "GTK" "Utility" ];
     mimeType = [ "x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv" ];
+  };
+  # Custom desktop entry for MongoDB Compass for compability with keyring
+  xdg.desktopEntries.nvidia-sync = {
+    name = "Nvidia Sync ";
+    comment = "Nvidia Sync for connecting to Spark";
+    genericName = "Spark";
+    exec = "distrobox-enter --name ubuntu-25.10 -- nvidia-sync";
+    icon = "nvidia-settings";
+    type = "Application";
+    startupNotify = true;
+    categories = [ "System" "Utility" ];
+    settings = {
+      Keywords = "Spark;spark;nvidia;sync;";
+    };
   };
   #nixGL = {
   #  packages = import nixgl {inherit pkgs;};
