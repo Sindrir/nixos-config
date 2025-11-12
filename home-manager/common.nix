@@ -243,32 +243,38 @@
       enableNushellIntegration = true;
     };
   };
-  # Custom desktop entry for MongoDB Compass for compability with keyring
-  xdg.desktopEntries.mongodb-compass = {
-    name = "MongoDB Compass";
-    comment = "The MongoDB GUI";
-    genericName = "MongoDB Compass";
-    exec = "mongodb-compass %u --password-store=\"gnome-libsecret\" --ignore-additional-command-line-flags";
-    icon = "mongodb-compass";
-    type = "Application";
-    startupNotify = true;
-    categories = [ "GNOME" "GTK" "Utility" ];
-    mimeType = [ "x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv" ];
-  };
-  # Custom desktop entry for MongoDB Compass for compability with keyring
-  xdg.desktopEntries.nvidia-sync = {
-    name = "Nvidia Sync ";
-    comment = "Nvidia Sync for connecting to Spark";
-    genericName = "Spark";
-    exec = "distrobox-enter --name ubuntu-25.10 -- nvidia-sync";
-    icon = "nvidia-settings";
-    type = "Application";
-    startupNotify = true;
-    categories = [ "System" "Utility" ];
-    settings = {
-      Keywords = "Spark;spark;nvidia;sync;";
+
+  xdg.desktopEntries = {
+    # Custom desktop entry for MongoDB Compass for compability with keyring
+    mongodb-compass = {
+      name = "MongoDB Compass";
+      comment = "The MongoDB GUI";
+      genericName = "MongoDB Compass";
+      exec = "mongodb-compass %u --password-store=\"gnome-libsecret\" --ignore-additional-command-line-flags";
+      icon = "mongodb-compass";
+      type = "Application";
+      startupNotify = true;
+      categories = [ "GNOME" "GTK" "Utility" ];
+      mimeType = [ "x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv" ];
+    };
+
+    # Used with distrobox to launch nvidia-sync inside ubuntu container
+    # distrobox-create --image ubuntu:25.10 -n ubuntu-25.10
+    nvidia-sync = {
+      name = "Nvidia Sync ";
+      comment = "Nvidia Sync for connecting to Spark";
+      genericName = "Spark";
+      exec = "distrobox-enter --name ubuntu-25.10 -- nvidia-sync";
+      icon = "nvidia-settings";
+      type = "Application";
+      startupNotify = true;
+      categories = [ "System" "Utility" ];
+      settings = {
+        Keywords = "Spark;spark;nvidia;sync;";
+      };
     };
   };
+
   #nixGL = {
   #  packages = import nixgl {inherit pkgs;};
   #  defaultWrapper = "mesa";
