@@ -90,7 +90,19 @@
   nixpkgs.config.allowUnfree = true;
 
   virtualisation = {
-    docker.enable = true;
+    docker = {
+      enable = true;
+      daemon = {
+        settings = {
+          "runtimes" = {
+            "nvidia" = {
+              "path" = "${pkgs.nvidia-docker}/bin/nvidia-container-runtime";
+              "runtimeArgs" = [ ];
+            };
+          };
+        };
+      };
+    };
     #    podman = {
     #      enable = true;
     #      dockerCompat = true;

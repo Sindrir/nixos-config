@@ -30,15 +30,15 @@
     gnome.gnome-keyring.enable = true;
     power-profiles-daemon.enable = false;
     tlp.enable = true;
+    xserver.videoDrivers = [ "nvidia" ];
   };
-
   hardware = {
     graphics.enable = true;
     nvidia = {
       modesetting.enable = true;
       powerManagement.enable = false;
       powerManagement.finegrained = false;
-      open = true;
+      open = false;
       nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       prime = {
@@ -46,6 +46,9 @@
         intelBusId = "PCI:0:2:0";
         nvidiaBusId = "PCI:1:0:0";
       };
+    };
+    nvidia-container-toolkit = {
+      enable = true;
     };
   };
 
