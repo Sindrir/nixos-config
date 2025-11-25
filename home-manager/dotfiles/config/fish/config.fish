@@ -21,7 +21,7 @@ function nurse
         echo "Use `nurse-fix` to automatically fix issues."
         return 1
     end
-    sudo nixos-rebuild switch --flake /home/sindreo/nixos-config#work-laptop
+    sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#work-laptop
 end
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
 alias ll="eza -l --icons --group-directories-first"

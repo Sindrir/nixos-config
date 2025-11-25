@@ -12,6 +12,14 @@
       ../common.nix
     ];
 
+  # Add extra home-manager packages specific to this host
+  home-manager.users.sindreo = {
+    home.packages = with pkgs; [
+      ## File sync
+      megasync
+    ];
+  };
+
   environment.shellAliases = {
     tree = "eza --tree";
     nurse = "sudo nixos-rebuild switch --flake /etc/nixos#home-desktop";

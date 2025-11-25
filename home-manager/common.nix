@@ -17,7 +17,7 @@
 
       # CLI
       wget
-      awscli2
+      # awscli2
       google-cloud-sdk-gce
       eza
       bat
@@ -54,6 +54,7 @@
       claude-code
       distrobox
       distrobox-tui
+      openconnect
 
       # Shell
       fish
@@ -137,9 +138,6 @@
 
       ## notes
       obsidian
-
-      ## File sync
-      megasync
 
       ## Sound settings
       pavucontrol

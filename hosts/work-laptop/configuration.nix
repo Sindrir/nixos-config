@@ -2,8 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  # Use /etc/nixos/hosts.nix for private host entries (not in git)
+  hostsFile = /etc/nixos/hosts.nix;
+  hostsFileExists = builtins.pathExists hostsFile;
+in
 {
   imports =
     [
@@ -11,7 +16,8 @@
       ./hardware-configuration.nix
       ../common.nix
       ../../modules/de/cosmic.nix
-    ];
+    ]
+    ++ lib.optionals hostsFileExists [ hostsFile ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
