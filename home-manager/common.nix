@@ -16,15 +16,12 @@
       # <HOME>
 
       # CLI
-      wget
-      # awscli2
       google-cloud-sdk-gce
       eza
       bat
       neofetch
       atuin
       kubectl
-      git
       gitui
       lazygit
       networkmanagerapplet

@@ -9,6 +9,18 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Bootloader configuration
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # Define a user account. Don't forget to set a password with 'passwd'.
+  users.users.sindreo = {
+    isNormalUser = true;
+    description = "Sindre Østrem";
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    uid = 1000;
+  };
+
   # Enable networking
   networking.networkmanager.enable = true;
 
@@ -88,6 +100,11 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  hardware = {
+    graphics.enable = true;
+    nvidia-container-toolkit.enable = true;
+  };
 
   virtualisation = {
     docker = {

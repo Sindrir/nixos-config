@@ -25,10 +25,6 @@
     nurse = "sudo nixos-rebuild switch --flake /etc/nixos#home-desktop";
   };
   hardware = {
-    graphics.enable = true;
-    nvidia-container-toolkit = {
-      enable = true;
-    };
     nvidia = {
       modesetting.enable = true;
       open = false;
@@ -36,22 +32,8 @@
     };
   };
 
-
-
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   networking.hostName = "home-desktop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  users.users.sindreo = {
-    isNormalUser = true;
-    home = "/home/sindreo";
-    description = "Sindre Østrem";
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
-    uid = 1000;
-  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -74,8 +56,6 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
     mangohud
     protonup-qt
     lutris

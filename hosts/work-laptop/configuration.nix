@@ -19,10 +19,6 @@ in
     ]
     ++ lib.optionals hostsFileExists [ hostsFile ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   networking.hostName = "work-laptop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -39,7 +35,6 @@ in
     xserver.videoDrivers = [ "nvidia" ];
   };
   hardware = {
-    graphics.enable = true;
     nvidia = {
       modesetting.enable = true;
       powerManagement.enable = false;
@@ -53,18 +48,6 @@ in
         nvidiaBusId = "PCI:1:0:0";
       };
     };
-    nvidia-container-toolkit = {
-      enable = true;
-    };
-  };
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.sindreo = {
-    isNormalUser = true;
-    description = "Sindre Østrem";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [
-    ];
   };
 
   # List packages installed in system profile. To search, run:
@@ -105,4 +88,3 @@ in
   system.stateVersion = "25.05"; # Did you read the comment?
 
 }
-
