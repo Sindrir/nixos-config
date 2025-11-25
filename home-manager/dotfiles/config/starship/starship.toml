@@ -1,0 +1,15 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+
+[git_metrics]
+disabled = false
+
+[gcloud]
+disabled = true
+
+[memory_usage]
+disabled = false
+
+[kubernetes]
+disabled = false

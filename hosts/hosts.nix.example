@@ -1,0 +1,12 @@
+# Example hosts file
+# Copy this to hosts.nix and add your private IP addresses
+# hosts.nix is gitignored to keep your private network information secure
+{ ... }:
+
+{
+  networking.extraHosts = ''
+    # Add your custom host entries here
+    # Example:
+    # 192.168.1.100 my-server
+  '';
+}
