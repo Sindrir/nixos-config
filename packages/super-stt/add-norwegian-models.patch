@@ -1,5 +1,5 @@
---- super-stt-shared/src/models/stt_model.rs.bak	2025-12-12 14:57:19.020350935 +0100
-+++ super-stt-shared/src/models/stt_model.rs	2025-12-12 15:00:13.318613099 +0100
+--- a/super-stt-shared/src/models/stt_model.rs	2025-12-12 14:57:19.020350935 +0100
++++ b/super-stt-shared/src/models/stt_model.rs	2025-12-12 15:00:13.318613099 +0100
 @@ -51,6 +51,20 @@
      #[value(name = "whisper-distil-large-v3")]
      WhisperDistilLargeV3,
