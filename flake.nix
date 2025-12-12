@@ -28,6 +28,19 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       #overlays = [inputs.nixgl.overlay];
+
+      # Custom packages overlay
+      customPackagesOverlay = _final: prev: {
+        super-stt = prev.callPackage ./packages/super-stt { };
+      };
+
+      # Apply overlays to pkgs
+      pkgsWithOverlays = import nixpkgs {
+        inherit system;
+        overlays = [ customPackagesOverlay ];
+        config.allowUnfree = true;
+      };
+
       configModule = {
         config.vim = {
           theme.enable = true;
@@ -39,7 +52,10 @@
       };
     in
     {
-      packages.${system}.my-neovim = customNeovim.neovim;
+      packages.${system} = {
+        my-neovim = customNeovim.neovim;
+        inherit (pkgsWithOverlays) super-stt;
+      };
 
       checks.${system} = {
         nixpkgs-fmt = pkgs.runCommand "check-nixpkgs-fmt" { } ''
@@ -65,6 +81,10 @@
           modules = [
             ./hosts/home-desktop/configuration.nix
             home-manager.nixosModules.default
+            # Apply custom packages overlay
+            {
+              nixpkgs.overlays = [ customPackagesOverlay ];
+            }
             {
               home-manager = {
                 extraSpecialArgs = {
@@ -82,6 +102,10 @@
           modules = [
             ./hosts/work-laptop/configuration.nix
             home-manager.nixosModules.default
+            # Apply custom packages overlay
+            {
+              nixpkgs.overlays = [ customPackagesOverlay ];
+            }
             {
               home-manager = {
                 extraSpecialArgs = {

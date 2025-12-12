@@ -1,0 +1,131 @@
+--- super-stt-shared/src/models/stt_model.rs.bak	2025-12-12 14:57:19.020350935 +0100
++++ super-stt-shared/src/models/stt_model.rs	2025-12-12 15:00:13.318613099 +0100
+@@ -51,6 +51,20 @@
+     #[value(name = "whisper-distil-large-v3")]
+     WhisperDistilLargeV3,
+ 
++    // Norwegian National Library models
++    #[value(name = "nb-whisper-tiny")]
++    NbWhisperTiny,
++    #[value(name = "nb-whisper-base")]
++    NbWhisperBase,
++    #[value(name = "nb-whisper-small")]
++    NbWhisperSmall,
++    #[value(name = "nb-whisper-medium")]
++    NbWhisperMedium,
++    #[value(name = "nb-whisper-large")]
++    NbWhisperLarge,
++    #[value(name = "nb-whisper-large-distil-turbo-beta")]
++    NbWhisperLargeDistilTurboBeta,
++
+     // Voxtral models
+     #[value(name = "voxtral-small")]
+     VoxtralSmall,
+@@ -82,6 +96,12 @@
+             Self::WhisperDistilMediumEn => write!(f, "whisper-distil-medium.en"),
+             Self::WhisperDistilLargeV2 => write!(f, "whisper-distil-large-v2"),
+             Self::WhisperDistilLargeV3 => write!(f, "whisper-distil-large-v3"),
++            Self::NbWhisperTiny => write!(f, "nb-whisper-tiny"),
++            Self::NbWhisperBase => write!(f, "nb-whisper-base"),
++            Self::NbWhisperSmall => write!(f, "nb-whisper-small"),
++            Self::NbWhisperMedium => write!(f, "nb-whisper-medium"),
++            Self::NbWhisperLarge => write!(f, "nb-whisper-large"),
++            Self::NbWhisperLargeDistilTurboBeta => write!(f, "nb-whisper-large-distil-turbo-beta"),
+             Self::VoxtralSmall => write!(f, "voxtral-small"),
+             Self::VoxtralMini => write!(f, "voxtral-mini"),
+         }
+@@ -103,7 +123,13 @@
+             | Self::WhisperDistilLargeV2
+             | Self::WhisperDistilLargeV3
+             | Self::VoxtralSmall
+-            | Self::VoxtralMini => true,
++            | Self::VoxtralMini
++            | Self::NbWhisperTiny
++            | Self::NbWhisperBase
++            | Self::NbWhisperSmall
++            | Self::NbWhisperMedium
++            | Self::NbWhisperLarge
++            | Self::NbWhisperLargeDistilTurboBeta => true,
+             Self::WhisperTinyEn
+             | Self::WhisperBaseEn
+             | Self::WhisperSmallEn
+@@ -130,7 +156,13 @@
+             | Self::WhisperBaseEn
+             | Self::WhisperSmallEn
+             | Self::WhisperMediumEn
+-            | Self::WhisperDistilMediumEn => false,
++            | Self::WhisperDistilMediumEn
++            | Self::NbWhisperTiny
++            | Self::NbWhisperBase
++            | Self::NbWhisperSmall
++            | Self::NbWhisperMedium
++            | Self::NbWhisperLarge
++            | Self::NbWhisperLargeDistilTurboBeta => false,
+         }
+     }
+ 
+@@ -152,6 +184,12 @@
+             Self::WhisperDistilMediumEn => ("distil-whisper/distil-medium.en", "main"),
+             Self::WhisperDistilLargeV2 => ("distil-whisper/distil-large-v2", "main"),
+             Self::WhisperDistilLargeV3 => ("distil-whisper/distil-large-v3", "main"),
++            Self::NbWhisperTiny => ("NbAiLab/nb-whisper-tiny", "main"),
++            Self::NbWhisperBase => ("NbAiLab/nb-whisper-base", "main"),
++            Self::NbWhisperSmall => ("NbAiLab/nb-whisper-small", "main"),
++            Self::NbWhisperMedium => ("NbAiLab/nb-whisper-medium", "main"),
++            Self::NbWhisperLarge => ("NbAiLab/nb-whisper-large", "main"),
++            Self::NbWhisperLargeDistilTurboBeta => ("NbAiLab/nb-whisper-large-distil-turbo-beta", "main"),
+             Self::VoxtralSmall => ("mistralai/Voxtral-Small-24B-2507", "main"),
+             Self::VoxtralMini => ("mistralai/Voxtral-Mini-3B-2507", "main"),
+         }
+@@ -162,8 +200,12 @@
+     pub fn get_processing_interval(&self) -> std::time::Duration {
+         match self {
+             // Fast models - can handle frequent updates
+-            Self::WhisperTiny | Self::WhisperTinyEn => std::time::Duration::from_millis(1000),
+-            Self::WhisperBase | Self::WhisperBaseEn => std::time::Duration::from_millis(1500),
++            Self::WhisperTiny | Self::WhisperTinyEn | Self::NbWhisperTiny => {
++                std::time::Duration::from_millis(1000)
++            }
++            Self::WhisperBase | Self::WhisperBaseEn | Self::NbWhisperBase => {
++                std::time::Duration::from_millis(1500)
++            }
+ 
+             // Semi-fast models - can handle frequent updates but with a slight delay
+             Self::VoxtralMini
+@@ -171,16 +213,20 @@
+             | Self::WhisperSmallEn
+             | Self::WhisperDistilMediumEn
+             | Self::WhisperMedium
+-            | Self::WhisperMediumEn => std::time::Duration::from_millis(2000),
++            | Self::WhisperMediumEn
++            | Self::NbWhisperSmall
++            | Self::NbWhisperMedium => std::time::Duration::from_millis(2000),
+             Self::WhisperDistilLargeV2 | Self::WhisperDistilLargeV3 => {
+                 std::time::Duration::from_millis(2000)
+             }
+-            Self::VoxtralSmall | Self::WhisperLargeV3Turbo => {
++            Self::VoxtralSmall
++            | Self::WhisperLargeV3Turbo
++            | Self::NbWhisperLargeDistilTurboBeta => {
+                 std::time::Duration::from_millis(3000)
+             }
+ 
+             // Large models - conservative intervals
+-            Self::WhisperLarge | Self::WhisperLargeV2 | Self::WhisperLargeV3 => {
++            Self::WhisperLarge | Self::WhisperLargeV2 | Self::WhisperLargeV3 | Self::NbWhisperLarge => {
+                 std::time::Duration::from_millis(5000)
+             }
+         }
+@@ -207,6 +253,12 @@
+             "whisper-distil-medium.en" => Ok(Self::WhisperDistilMediumEn),
+             "whisper-distil-large-v2" => Ok(Self::WhisperDistilLargeV2),
+             "whisper-distil-large-v3" => Ok(Self::WhisperDistilLargeV3),
++            "nb-whisper-tiny" => Ok(Self::NbWhisperTiny),
++            "nb-whisper-base" => Ok(Self::NbWhisperBase),
++            "nb-whisper-small" => Ok(Self::NbWhisperSmall),
++            "nb-whisper-medium" => Ok(Self::NbWhisperMedium),
++            "nb-whisper-large" => Ok(Self::NbWhisperLarge),
++            "nb-whisper-large-distil-turbo-beta" => Ok(Self::NbWhisperLargeDistilTurboBeta),
+             "voxtral-small" => Ok(Self::VoxtralSmall),
+             "voxtral-mini" => Ok(Self::VoxtralMini),
+             _ => Err(format!("Unknown model: {s}")),
