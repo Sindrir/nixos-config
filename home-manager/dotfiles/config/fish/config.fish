@@ -17,6 +17,7 @@ function nurse-fix
     deadnix -e /home/sindreo/nixos-config
 end
 function nurse
+    sudo -v
     if not nix flake check /home/sindreo/nixos-config
         echo "Use `nurse-fix` to automatically fix issues."
         return 1

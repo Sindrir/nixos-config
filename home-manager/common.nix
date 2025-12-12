@@ -105,6 +105,7 @@
       webkitgtk_4_1
       xdg-desktop-portal-gtk
       quick-webapps
+      omnissa-horizon-client
 
       # Programming
       ## Editors

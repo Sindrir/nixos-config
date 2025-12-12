@@ -16,6 +16,7 @@ in
       ./hardware-configuration.nix
       ../common.nix
       ../../modules/de/cosmic.nix
+      ../../modules/power/system76-power.nix
     ]
     ++ lib.optionals hostsFileExists [ hostsFile ];
 
@@ -28,22 +29,52 @@ in
 
   # Cosmic Desktop Environment enabled via imported module.
 
+  # Enable system76-power with automatic power profile switching
+  services.system76-power = {
+    enable = true;
+    acProfile = "performance"; # Use performance mode when plugged in
+    batteryProfile = "battery"; # Use battery mode when on battery
+
+    # Runtime power management - dynamically power off GPU without reboots
+    runtimePowerManagement = {
+      enable = true;
+      nvidiaBusId = "0000:01:00.0"; # Your NVIDIA GPU PCI bus ID
+      suspendOnBattery = true; # Automatically power off GPU when on battery
+    };
+
+    # GPU switching configuration (requires reboot - DISABLED in favor of runtime PM)
+    gpuSwitching = {
+      enable = false; # Disabled - using runtime PM instead for instant switching
+      # When disabled, system stays in hybrid mode permanently
+      # Runtime PM controls actual GPU power state dynamically
+    };
+  };
+
   services = {
     gnome.gnome-keyring.enable = true;
-    power-profiles-daemon.enable = false;
-    tlp.enable = true;
     xserver.videoDrivers = [ "nvidia" ];
   };
   hardware = {
     nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = false;
-      powerManagement.finegrained = false;
+
+      # Enable power management for runtime PM (dynamic GPU power on/off)
+      powerManagement.enable = true;
+      # Enable fine-grained power management (allows GPU to suspend when idle)
+      powerManagement.finegrained = true;
+
       open = false;
       nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       prime = {
-        sync.enable = true; # Automatic GPU switching; for manual offload, use offload.enable and prime-run
+        # Use offload mode for PRIME render offloading (hybrid graphics)
+        # GPU is available on-demand but can be powered off when not in use
+        offload = {
+          enable = true;
+          enableOffloadCmd = true; # Provides 'nvidia-offload' command
+        };
+        # Disable sync mode (would force both GPUs to always be active)
+        sync.enable = false;
         intelBusId = "PCI:0:2:0";
         nvidiaBusId = "PCI:1:0:0";
       };
