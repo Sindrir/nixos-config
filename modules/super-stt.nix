@@ -39,6 +39,13 @@ in
       default = false;
       description = "Automatically start the super-stt daemon at login.";
     };
+
+    norwegianModels = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "List of Norwegian whisper models to pre-download.";
+      example = [ "nb-whisper-tiny" "nb-whisper-base" "nb-whisper-small" ];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -67,6 +74,26 @@ in
 
     # Add user to necessary groups for audio access
     users.users.${cfg.user}.extraGroups = [ "audio" ];
+
+    # Create systemd services to pre-download Norwegian models
+    systemd.user.services = mkMerge (
+      map (modelName: {
+        "super-stt-download-${modelName}" = {
+          description = "Download Norwegian whisper model ${modelName}";
+          after = [ "network-online.target" ];
+          wants = [ "network-online.target" ];
+
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${cfg.package}/bin/super-stt --model ${modelName} --download-only || true";
+          };
+
+          # Only create service if this model is in the list
+          enable = builtins.elem modelName cfg.norwegianModels;
+        };
+      }) cfg.norwegianModels
+    );
 
     # Enable PulseAudio/PipeWire support (already configured in common.nix)
     # Just ensure audio is available
