@@ -87,6 +87,21 @@ rustPlatform.buildRustPackage rec {
     WantedBy=default.target
     EOF
 
+        # Install COSMIC applet desktop file
+        mkdir -p $out/share/applications
+        cat > $out/share/applications/super-stt-cosmic-applet.desktop <<EOF
+    [Desktop Entry]
+    Type=Application
+    Name=Super STT
+    Comment=Speech-to-text applet
+    Icon=audio-input-microphone
+    Exec=$out/bin/super-stt-cosmic-applet
+    Categories=Utility;
+    Keywords=speech;transcription;stt;voice;
+    NoDisplay=false
+    X-COSMIC-Applet=true
+    EOF
+
         # Create wrapper script for convenience
         mkdir -p $out/bin
         cat > $out/bin/stt <<EOF
