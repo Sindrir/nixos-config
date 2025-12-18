@@ -1,1 +1,5 @@
 .idea
+
+# Nix build results
+result
+result-*

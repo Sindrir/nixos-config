@@ -10,7 +10,87 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../common.nix
+      ../../modules/de/cosmic.nix
     ];
+
+  boot.extraModprobeConfig = ''
+    options snd-hda-intel model=auto
+    options snd-intel-dspcfg dsp_driver=1
+    options snd-hda-intel power_save=0
+  '';
+
+  services.pipewire = {
+    extraConfig.pipewire."92-low-latency" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 512;
+        "default.clock.min-quantum" = 256;
+        "default.clock.max-quantum" = 2048;
+      };
+    };
+    extraConfig.pipewire-pulse."92-low-latency" = {
+      "pulse.properties" = {
+        "pulse.min.req" = "512/48000";
+        "pulse.default.req" = "512/48000";
+        "pulse.max.req" = "512/48000";
+        "pulse.min.quantum" = "512/48000";
+        "pulse.max.quantum" = "512/48000";
+      };
+      "stream.properties" = {
+        "node.latency" = "512/48000";
+        "resample.quality" = 4;
+      };
+    };
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/99-ssl2-config.conf" ''
+        monitor.alsa.rules = [
+          {
+            matches = [
+              { node.name = "~alsa_output.*" }
+            ]
+            actions = {
+              update-props = {
+                audio.format = "S24LE"
+                audio.rate = 48000
+                api.alsa.period-size = 512
+                api.alsa.headroom = 1024
+                session.suspend-timeout-seconds = 0
+              }
+            }
+          }
+          {
+            matches = [
+              { node.name = "~alsa_input.*" }
+            ]
+            actions = {
+              update-props = {
+                audio.format = "S24LE"
+                audio.rate = 48000
+                api.alsa.period-size = 512
+                api.alsa.headroom = 1024
+                session.suspend-timeout-seconds = 0
+              }
+            }
+          }
+        ]
+      '')
+      # Temporarily disabled - causing SSL2+ node creation to fail
+      # (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-disable-ucm.conf" ''
+      #   monitor.alsa.rules = [
+      #     {
+      #       matches = [
+      #         { device.name = "~alsa_card.*" }
+      #       ]
+      #       actions = {
+      #         update-props = {
+      #           api.alsa.use-ucm = false
+      #         }
+      #       }
+      #     }
+      #   ]
+      # '')
+    ];
+  };
 
   # Add extra home-manager packages specific to this host
   home-manager.users.sindreo = {
@@ -44,7 +124,6 @@
       videoDrivers = [ "nvidia" ];
       enable = true;
     };
-    desktopManager.cosmic.enable = true;
     printing.enable = true;
   };
 

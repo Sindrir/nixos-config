@@ -16,12 +16,12 @@
   };
 
   outputs =
-    inputs @ {
+    inputs@{
       #self,
-      nixpkgs
-    , nvf
-    , home-manager
-    , #nixgl,
+      nixpkgs,
+      nvf,
+      home-manager,
+      #nixgl,
       ...
     }:
     let
@@ -39,7 +39,10 @@
       };
     in
     {
-      packages.${system}.my-neovim = customNeovim.neovim;
+      packages.${system} = {
+        my-neovim = customNeovim.neovim;
+        nixos-mcp-server = pkgs.callPackage ./packages/nixos-mcp-server { };
+      };
 
       checks.${system} = {
         nixpkgs-fmt = pkgs.runCommand "check-nixpkgs-fmt" { } ''

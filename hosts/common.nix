@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib,  ... }:
 
 {
 
@@ -17,9 +17,13 @@
   users.users.sindreo = {
     isNormalUser = true;
     description = "Sindre Østrem";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "audio" ];
     uid = 1000;
   };
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -89,6 +93,13 @@
 
   # Enable realtime scheduling for PipeWire
   security.rtkit.enable = true;
+
+  # Increase limits for realtime audio
+  security.pam.loginLimits = [
+    { domain = "@audio"; type = "-"; item = "rtprio"; value = "95"; }
+    { domain = "@audio"; type = "-"; item = "memlock"; value = "unlimited"; }
+    { domain = "@audio"; type = "-"; item = "nice"; value = "-19"; }
+  ];
 
   # Configure console keymap
   console.keyMap = "no";

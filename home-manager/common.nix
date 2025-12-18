@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
+let
+  nixos-mcp-server = pkgs.callPackage ../packages/nixos-mcp-server { };
+in
 {
   xdg = {
     enable = true;
@@ -49,6 +52,7 @@
       gemini-cli
       opencode
       claude-code
+      nixos-mcp-server
       distrobox
       distrobox-tui
       openconnect
@@ -138,6 +142,8 @@
 
       ## Sound settings
       pavucontrol
+      alsa-ucm-conf
+      easyeffects
     ];
 
     file = {

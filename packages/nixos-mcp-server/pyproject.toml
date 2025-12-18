@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nixos-mcp-server"
+version = "0.1.0"
+description = "MCP server for NixOS system information"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=0.9.0",
+]
+
+[project.scripts]
+nixos-mcp-server = "nixos_mcp_server.server:main"
+
+[tool.setuptools]
+packages = ["nixos_mcp_server"]
