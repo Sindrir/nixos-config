@@ -187,6 +187,11 @@
         source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
         recursive = true;
       };
+      # COSMIC desktop environment configuration (entire config directory)
+      ".config/cosmic" = {
+        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/cosmic;
+        recursive = true;
+      };
       #       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
       #       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
       #       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;
