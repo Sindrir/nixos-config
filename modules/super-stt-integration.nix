@@ -13,7 +13,7 @@
     enable = true;
 
     # Set to true if you have an NVIDIA GPU and want GPU acceleration
-    enableCudaSupport = false;
+    enableCudaSupport = true;
 
     # Default Norwegian whisper model to use
     # Available: nb-whisper-tiny, nb-whisper-base, nb-whisper-small,
@@ -21,7 +21,7 @@
     model = "nb-whisper-small";
 
     # Set to true to automatically start the daemon at login
-    autoStart = false;
+    autoStart = true;
 
     # User who will run the service
     user = "sindreo";

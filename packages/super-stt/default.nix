@@ -12,6 +12,8 @@
 , perl
 , cargo
 , rustc
+, cudaSupport ? true
+, cudaPackages
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -36,6 +38,8 @@ rustPlatform.buildRustPackage rec {
     perl
     rustc
     cargo
+  ] ++ lib.optionals cudaSupport [
+    cudaPackages.cuda_nvcc
   ];
 
   buildInputs = [
@@ -45,12 +49,21 @@ rustPlatform.buildRustPackage rec {
     wayland
     libGL
     udev
+  ] ++ lib.optionals cudaSupport [
+    cudaPackages.cuda_cudart
+    cudaPackages.cuda_nvrtc
+    cudaPackages.libcurand
+    cudaPackages.cudnn
+    cudaPackages.libcublas
   ];
 
   # The workspace contains multiple binaries
   # Build all three: daemon, app, and applet
   cargoBuildFlags = [
     "--workspace"
+  ] ++ lib.optionals cudaSupport [
+    "--features"
+    "cuda,cudnn"
   ];
 
   # Skip tests as they may require specific hardware or models
@@ -58,6 +71,19 @@ rustPlatform.buildRustPackage rec {
 
   # Set up environment variables for the build
   LIBCLANG_PATH = "${stdenv.cc.cc.lib}/lib";
+
+  # CUDA environment variables (when GPU support is enabled)
+  # cudarc and candle-kernels look for CUDA in these paths during build
+  preBuild = lib.optionalString cudaSupport ''
+    export CUDA_PATH="${cudaPackages.cuda_cudart}"
+    export CUDA_ROOT="${cudaPackages.cuda_cudart}"
+    export CUDA_TOOLKIT_ROOT_DIR="${cudaPackages.cuda_cudart}"
+    export CUDNN_PATH="${cudaPackages.cudnn}"
+    # Set compute capability for RTX 30xx series (8.6)
+    # Adjust this if you have a different GPU:
+    # RTX 40xx: 8.9, RTX 20xx: 7.5, GTX 10xx: 6.1
+    export CUDA_COMPUTE_CAP="86"
+  '';
 
   # Provide git information for vergen crate
   # Since we're building from a fetched source without .git directory,
@@ -87,19 +113,69 @@ rustPlatform.buildRustPackage rec {
     WantedBy=default.target
     EOF
 
-        # Install COSMIC applet desktop file
+        # Install COSMIC applet desktop files (all three variants)
         mkdir -p $out/share/applications
-        cat > $out/share/applications/super-stt-cosmic-applet.desktop <<EOF
+
+        # Full visualization applet
+        cat > $out/share/applications/super-stt-cosmic-applet-full.desktop <<EOF
     [Desktop Entry]
     Type=Application
-    Name=Super STT
-    Comment=Speech-to-text applet
-    Icon=audio-input-microphone
-    Exec=$out/bin/super-stt-cosmic-applet
-    Categories=Utility;
-    Keywords=speech;transcription;stt;voice;
-    NoDisplay=false
-    X-COSMIC-Applet=true
+    Name=Super STT Applet (Full)
+    Comment=Speech-to-text panel applet - Full visualization display
+    Icon=super-stt-cosmic-applet-symbolic
+    Exec=$out/bin/super-stt-cosmic-applet --side full
+    Terminal=false
+    Categories=COSMIC;
+    Keywords=COSMIC;Iced;Speech;STT;Super;
+    NoDisplay=true
+    X-CosmicApplet=true
+    X-CosmicHoverPopup=Auto
+    X-OverflowPriority=50
+    EOF
+
+        # Left side applet
+        cat > $out/share/applications/super-stt-cosmic-applet-left.desktop <<EOF
+    [Desktop Entry]
+    Type=Application
+    Name=Super STT Applet (Left Side)
+    Comment=Speech-to-text panel applet - Left side visualization display
+    Icon=super-stt-cosmic-applet-symbolic
+    Exec=$out/bin/super-stt-cosmic-applet --side left
+    Terminal=false
+    Categories=COSMIC;
+    Keywords=COSMIC;Iced;Speech;STT;Super;
+    NoDisplay=true
+    X-CosmicApplet=true
+    X-CosmicHoverPopup=Auto
+    X-OverflowPriority=50
+    EOF
+
+        # Right side applet
+        cat > $out/share/applications/super-stt-cosmic-applet-right.desktop <<EOF
+    [Desktop Entry]
+    Type=Application
+    Name=Super STT Applet (Right Side)
+    Comment=Speech-to-text panel applet - Right side visualization display
+    Icon=super-stt-cosmic-applet-symbolic
+    Exec=$out/bin/super-stt-cosmic-applet --side right
+    Terminal=false
+    Categories=COSMIC;
+    Keywords=COSMIC;Iced;Speech;STT;Super;
+    NoDisplay=true
+    X-CosmicApplet=true
+    X-CosmicHoverPopup=Auto
+    X-OverflowPriority=50
+    EOF
+
+        # Install applet icon
+        mkdir -p $out/share/icons/hicolor/scalable/apps
+        # Create a simple microphone icon as a placeholder
+        # In a production setup, you'd copy the actual icon from the source
+        cat > $out/share/icons/hicolor/scalable/apps/super-stt-cosmic-applet-symbolic.svg <<EOF
+    <?xml version="1.0" encoding="UTF-8"?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+      <path d="M8 1a2 2 0 0 0-2 2v4a2 2 0 1 0 4 0V3a2 2 0 0 0-2-2zm0 9a3 3 0 0 1-3-3H4a4 4 0 0 0 3 3.87V13H5v1h6v-1H9v-2.13A4 4 0 0 0 12 7h-1a3 3 0 0 1-3 3z"/>
+    </svg>
     EOF
 
         # Create wrapper script for convenience
@@ -112,25 +188,32 @@ rustPlatform.buildRustPackage rec {
   '';
 
   # Add runtime library paths
-  postFixup = ''
-    patchelf --add-rpath ${lib.makeLibraryPath [
-      alsa-lib
-      libxkbcommon
-      wayland
-      libGL
-      udev
-    ]} $out/bin/super-stt
-    patchelf --add-rpath ${lib.makeLibraryPath [
-      libxkbcommon
-      wayland
-      libGL
-    ]} $out/bin/super-stt-app
-    patchelf --add-rpath ${lib.makeLibraryPath [
-      libxkbcommon
-      wayland
-      libGL
-    ]} $out/bin/super-stt-cosmic-applet
-  '';
+  postFixup =
+    let
+      daemonLibs = [
+        alsa-lib
+        libxkbcommon
+        wayland
+        libGL
+        udev
+      ] ++ lib.optionals cudaSupport [
+        cudaPackages.cuda_cudart
+        cudaPackages.cuda_nvrtc
+        cudaPackages.libcurand
+        cudaPackages.cudnn
+        cudaPackages.libcublas
+      ];
+      guiLibs = [
+        libxkbcommon
+        wayland
+        libGL
+      ];
+    in
+    ''
+      patchelf --add-rpath ${lib.makeLibraryPath daemonLibs} $out/bin/super-stt
+      patchelf --add-rpath ${lib.makeLibraryPath guiLibs} $out/bin/super-stt-app
+      patchelf --add-rpath ${lib.makeLibraryPath guiLibs} $out/bin/super-stt-cosmic-applet
+    '';
 
   meta = with lib; {
     description = "High-performance speech-to-text service for Linux with real-time transcription";

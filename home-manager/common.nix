@@ -52,6 +52,7 @@
       distrobox
       distrobox-tui
       openconnect
+      texlivePackages.pdfjam
 
       # Shell
       fish
@@ -86,6 +87,8 @@
       vlc
       remmina
       gimp
+      obs-studio
+      reaper
 
       ## Music
       spotify

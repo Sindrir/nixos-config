@@ -11,7 +11,9 @@ in
 
     package = mkOption {
       type = types.package;
-      default = pkgs.super-stt;
+      default = pkgs.super-stt.override {
+        cudaSupport = cfg.enableCudaSupport;
+      };
       defaultText = literalExpression "pkgs.super-stt";
       description = "The super-stt package to use.";
     };
@@ -74,7 +76,13 @@ in
           # Set environment variables if needed
           environment = mkIf cfg.enableCudaSupport {
             # CUDA-related environment variables
-            LD_LIBRARY_PATH = "${pkgs.cudaPackages.cudatoolkit}/lib";
+            LD_LIBRARY_PATH = lib.makeLibraryPath [
+              pkgs.cudaPackages.cuda_cudart
+              pkgs.cudaPackages.cuda_nvrtc
+              pkgs.cudaPackages.libcurand
+              pkgs.cudaPackages.cudnn
+              pkgs.cudaPackages.libcublas
+            ];
           };
         };
       }
