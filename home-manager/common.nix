@@ -207,6 +207,12 @@
       #package = (config.lib.nixGL.wrap inputs.wezterm.packages.${pkgs.system}.default);
       #package = inputs.wezterm.packages.${pkgs.system}.default;
     };
+    tmux = {
+      enable = true;
+      clock24 = true;
+      mouse = true;
+      shell = "${pkgs.fish}/bin/fish";
+    };
     bottom.enable = true;
     nushell = {
       enable = true;

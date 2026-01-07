@@ -128,6 +128,7 @@
 
   environment.systemPackages = with pkgs; [
     git
+    git-lfs
     vim
     htop
     curl
