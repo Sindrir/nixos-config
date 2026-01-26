@@ -10,6 +10,7 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../common.nix
+      ../../modules/de/cosmic.nix
     ];
 
   # Add extra home-manager packages specific to this host
@@ -39,12 +40,13 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  # Cosmic Desktop Environment enabled via imported module.
+
   services = {
     xserver = {
       videoDrivers = [ "nvidia" ];
       enable = true;
     };
-    desktopManager.cosmic.enable = true;
     printing.enable = true;
   };
 

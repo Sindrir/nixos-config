@@ -42,3 +42,8 @@ function y
 end
 
 string match -q "$TERM_PROGRAM" kiro and . (kiro --locate-shell-integration-path fish)
+
+alias pt="presenterm"
+function ptit
+    kitty presenterm ~/Documents/itPresentation/it.md -t nb
+end

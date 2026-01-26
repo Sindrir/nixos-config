@@ -24,14 +24,14 @@ rustPlatform.buildRustPackage rec {
     owner = "jorge-menjivar";
     repo = "super-stt";
     rev = "main"; # You can pin this to a specific commit or tag
-    hash = "sha256-pcwflO3ecL9Zp5z6FFu+ERFk1RhEfyxRdVe1F/NL4hM=";
+    hash = "sha256-ei2qKI1NpQOg8FbcOwZzUc6QMIeUkVcxZBlksGb8/0g=";
   };
 
   # Apply patch to add Norwegian Whisper models
   patches = [ ./add-norwegian-models.patch ];
 
   # Use cargoHash instead of cargoLock for easier maintenance
-  cargoHash = "sha256-K1oNMP0E3d0vhB2Lt22sRHTIXKSqNLginbZJYjIC4yk=";
+  cargoHash = "sha256-kNigLtjKwOWKSKQY6XzV4V6xmc11nMo7+viGlXogJJo=";
 
   nativeBuildInputs = [
     pkg-config

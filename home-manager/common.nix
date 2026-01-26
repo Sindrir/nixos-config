@@ -16,6 +16,12 @@
       # <HOME>
 
       # CLI
+      youtube-tui
+      yt-dlp
+      mermaid-cli
+      helm
+      imagemagick
+      python3
       google-cloud-sdk-gce
       eza
       bat
@@ -109,6 +115,7 @@
       xdg-desktop-portal-gtk
       quick-webapps
       omnissa-horizon-client
+      scribus
 
       # Programming
       ## Editors
@@ -207,6 +214,12 @@
       #package = (config.lib.nixGL.wrap inputs.wezterm.packages.${pkgs.system}.default);
       #package = inputs.wezterm.packages.${pkgs.system}.default;
     };
+    kitty = {
+      enable = true;
+      settings = {
+        shell = "fish";
+      };
+    };
     tmux = {
       enable = true;
       clock24 = true;
@@ -229,14 +242,14 @@
          algorithm: "fuzzy"    # prefix or fuzzy
          external: {
          # set to false to prevent nushell looking into $env.PATH to find more suggestions
-             enable: true 
+             enable: true
          # set to lower can improve completion performance at the cost of omitting some options
-             max_results: 100 
-             completer: $carapace_completer # check 'carapace_completer' 
+             max_results: 100
+             completer: $carapace_completer # check 'carapace_completer'
            }
          }
-        } 
-        $env.PATH = ($env.PATH | 
+        }
+        $env.PATH = ($env.PATH |
         split row (char esep) |
         prepend /home/myuser/.apps |
         append /usr/bin/env
@@ -246,6 +259,18 @@
     carapace = {
       enable = true;
       enableNushellIntegration = true;
+    };
+  };
+
+  # Vicinae configuration
+  services.vicinae = {
+    enable = true;
+    systemd = {
+      enable = true;
+      autoStart = true;
+      environment = {
+        USE_LAYER_SHELL = 1;
+      };
     };
   };
 

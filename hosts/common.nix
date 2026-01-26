@@ -7,7 +7,14 @@
     #  ./jetbrains-nix-ld-fix.nix
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    # Cachix binary cache for vicinae
+    extra-substituters = [ "https://vicinae.cachix.org" ];
+    extra-trusted-public-keys = [
+      "vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc="
+    ];
+  };
 
   # Bootloader configuration
   boot.loader.systemd-boot.enable = true;

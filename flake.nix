@@ -9,6 +9,7 @@
     };
     nvf.url = "github:notashelf/nvf";
     wezterm.url = "github:wezterm/wezterm?dir=nix";
+    vicinae.url = "github:vicinaehq/vicinae";
     #nixgl = {
     #  url = "github:nix-community/nixGL";
     #  inputs.nixpkgs.follows = "nixpkgs";
@@ -21,6 +22,7 @@
       nixpkgs
     , nvf
     , home-manager
+    , vicinae
     , #nixgl,
       ...
     }:
@@ -91,6 +93,7 @@
                   inherit inputs;
                 };
                 useGlobalPkgs = true;
+                sharedModules = [ vicinae.homeManagerModules.default ];
                 users.sindreo = import ./home-manager/sindreo.nix;
                 backupFileExtension = "bak";
               };
@@ -112,6 +115,7 @@
                   inherit inputs;
                 };
                 useGlobalPkgs = true;
+                sharedModules = [ vicinae.homeManagerModules.default ];
                 users.sindreo = import ./home-manager/sindreo.nix;
                 backupFileExtension = "bak";
               };
@@ -129,6 +133,7 @@
             #inherit nixgl;
           };
           modules = [
+            vicinae.homeManagerModules.default
             { home.packages = [ customNeovim.neovim ]; }
             ./home-manager/sindreo.nix
           ];
