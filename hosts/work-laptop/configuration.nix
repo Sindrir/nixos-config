@@ -17,7 +17,7 @@ in
       ../common.nix
       ../../modules/de/cosmic.nix
       ../../modules/power/system76-power.nix
-      ../../modules/super-stt-integration.nix
+      #../../modules/super-stt-integration.nix
     ]
     ++ lib.optionals hostsFileExists [ hostsFile ];
 

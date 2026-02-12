@@ -4,6 +4,13 @@
   xdg = {
     enable = true;
     mime.enable = true;
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "x-scheme-handler/http" = [ "url-dispatcher.desktop" ];
+        "x-scheme-handler/https" = [ "url-dispatcher.desktop" ];
+      };
+    };
   };
   #targets.genericLinux.enable = true;
   #nixpkgs.allowUnfreePredicate = _: true;
@@ -16,6 +23,8 @@
       # <HOME>
 
       # CLI
+      wl-clipboard
+      libnotify
       youtube-tui
       yt-dlp
       mermaid-cli
@@ -160,10 +169,6 @@
         source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix;
         recursive = true;
       };
-      ".config/wezterm" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/wezterm;
-        recursive = true;
-      };
       ".config/starship.toml" = {
         source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/starship/starship.toml;
       };
@@ -211,6 +216,7 @@
     home-manager.enable = true;
     wezterm = {
       enable = true;
+      extraConfig = builtins.readFile ./dotfiles/config/wezterm/wezterm.lua;
       #package = (config.lib.nixGL.wrap inputs.wezterm.packages.${pkgs.system}.default);
       #package = inputs.wezterm.packages.${pkgs.system}.default;
     };
@@ -260,6 +266,10 @@
       enable = true;
       enableNushellIntegration = true;
     };
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
   };
 
   # Vicinae configuration
@@ -274,6 +284,22 @@
     };
   };
 
+  home.file.".local/bin/url-dispatcher" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      URL="$1"
+      case "$URL" in
+        *code-with-me.global.jetbrains.com/*)
+          exec fish -c "join_code_with_me '$URL'"
+          ;;
+        *)
+          exec ''${BROWSER:-firefox} "$URL"
+          ;;
+      esac
+    '';
+  };
+
   xdg.desktopEntries = {
     # Custom desktop entry for MongoDB Compass for compability with keyring
     mongodb-compass = {
@@ -286,6 +312,32 @@
       startupNotify = true;
       categories = [ "GNOME" "GTK" "Utility" ];
       mimeType = [ "x-scheme-handler/mongodb" "x-scheme-handler/mongodb+srv" ];
+    };
+
+    # URL dispatcher - routes specific URLs to custom handlers, everything else to Firefox
+    url-dispatcher = {
+      name = "The Link Whisperer";
+      comment = "Routes URLs to appropriate handlers";
+      exec = "/home/sindreo/.local/bin/url-dispatcher %u";
+      type = "Application";
+      categories = [ "Network" ];
+      noDisplay = true;
+      mimeType = [ "x-scheme-handler/http" "x-scheme-handler/https" ];
+    };
+
+    # Join JetBrains Code With Me session from clipboard URL
+    # Can be bound to a keyboard shortcut in COSMIC Settings > Keyboard > Custom Shortcuts
+    join-code-with-me = {
+      name = "Join Code With Me";
+      comment = "Join a JetBrains Code With Me session using the URL from clipboard";
+      genericName = "Code With Me";
+      exec = "fish -c join_code_with_me";
+      icon = "jetbrains-toolbox";
+      type = "Application";
+      categories = [ "Development" ];
+      settings = {
+        Keywords = "JetBrains;CodeWithMe;CWM;pair;programming;";
+      };
     };
 
     # Used with distrobox to launch nvidia-sync inside ubuntu container
