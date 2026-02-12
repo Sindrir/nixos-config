@@ -93,7 +93,10 @@
                   inherit inputs;
                 };
                 useGlobalPkgs = true;
-                sharedModules = [ vicinae.homeManagerModules.default ];
+                sharedModules = [
+                  vicinae.homeManagerModules.default
+                  ./packages/link-whisperer/hm-module.nix
+                ];
                 users.sindreo = import ./home-manager/sindreo.nix;
                 backupFileExtension = "bak";
               };
@@ -115,7 +118,10 @@
                   inherit inputs;
                 };
                 useGlobalPkgs = true;
-                sharedModules = [ vicinae.homeManagerModules.default ];
+                sharedModules = [
+                  vicinae.homeManagerModules.default
+                  ./packages/link-whisperer/hm-module.nix
+                ];
                 users.sindreo = import ./home-manager/sindreo.nix;
                 backupFileExtension = "bak";
               };
@@ -134,6 +140,7 @@
           };
           modules = [
             vicinae.homeManagerModules.default
+            ./packages/link-whisperer/hm-module.nix
             { home.packages = [ customNeovim.neovim ]; }
             ./home-manager/sindreo.nix
           ];

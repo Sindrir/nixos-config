@@ -43,10 +43,6 @@ end
 
 string match -q "$TERM_PROGRAM" kiro and . (kiro --locate-shell-integration-path fish)
 
-alias cwm="join_code_with_me"
-alias jetbrains-join="join_code_with_me"
-alias jbcwm="join_code_with_me"
-
 alias pt="presenterm"
 function ptit
     setsid kitty -o font_size=24 presenterm ~/Documents/itPresentation/it.md -t nb &>/dev/null &
