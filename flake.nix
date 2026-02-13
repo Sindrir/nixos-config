@@ -122,7 +122,12 @@
                   vicinae.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
                 ];
-                users.sindreo = import ./home-manager/sindreo.nix;
+                users.sindreo = {
+                  imports = [
+                    ./home-manager/sindreo.nix
+                    ./home-manager/work.nix
+                  ];
+                };
                 backupFileExtension = "bak";
               };
             }
