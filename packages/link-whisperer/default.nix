@@ -18,6 +18,11 @@ stdenv.mkDerivation {
       *code-with-me.global.jetbrains.com/*)
         exec fish -c "join_code_with_me '$URL'"
         ;;
+      https://app.slack.com/huddle/*/*)
+        TEAM=$(echo "$URL" | sed 's|.*/huddle/\([^/]*\)/.*|\1|')
+        ID=$(echo "$URL" | sed 's|.*/huddle/[^/]*/\([^/?#]*\).*|\1|')
+        exec slack "slack://join-huddle?team=$TEAM&id=$ID"
+        ;;
       *)
         exec ''${BROWSER:-firefox} "$URL"
         ;;
