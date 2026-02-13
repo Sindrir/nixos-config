@@ -6,6 +6,7 @@
     Unit.Description = "Join Slack development huddle";
     Service = {
       Type = "oneshot";
+      ExecStartPre = "${pkgs.libnotify}/bin/notify-send -a 'Slack' -i dialog-information -t 5000 'Development Huddle' 'Joining Slack huddle...'";
       ExecStart = "${pkgs.slack}/bin/slack 'slack://join-huddle?team=T0SNGK4R1&id=C0AENME6PGT'";
     };
   };
