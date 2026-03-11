@@ -41,7 +41,11 @@
       dates = "weekly";
       options = "--delete-older-than 30d";
     };
-    optimise.automatic = true;
+    optimise = {
+      automatic = true;
+      dates = [ "daily" ];
+      persistent = true;
+    };
   };
 
   # Set your time zone.

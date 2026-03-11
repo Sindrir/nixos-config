@@ -16,7 +16,7 @@ stdenv.mkDerivation {
     URL="$1"
     case "$URL" in
       *code-with-me.global.jetbrains.com/*)
-        exec fish -c "join_code_with_me '$URL'"
+        exec fish -c 'join_code_with_me $argv[1]' -- "$URL"
         ;;
       https://app.slack.com/huddle/*/*)
         TEAM=$(echo "$URL" | sed 's|.*/huddle/\([^/]*\)/.*|\1|')

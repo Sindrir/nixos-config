@@ -17,8 +17,12 @@
     stateVersion = "25.05";
     packages = with pkgs; [
       # <HOME>
+      cosmic-applet-recorder
 
       # CLI
+      sqlcmd
+      github-mcp-server
+      openssl
       youtube-tui
       yt-dlp
       mermaid-cli
@@ -74,6 +78,7 @@
       yazi
 
       ## LSP
+      typescript-language-server
       kotlin-language-server
       yaml-language-server
       nginx-language-server

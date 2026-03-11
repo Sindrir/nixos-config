@@ -1,6 +1,16 @@
 { pkgs, ... }:
 
 {
+  sops = {
+    age.keyFile = "/home/sindreo/.config/sops/age/keys.txt";
+    defaultSopsFile = ../secrets/github-app.yaml;
+    secrets = {
+      github_app_id = { };
+      github_app_installation_id = { };
+      github_app_private_key = { };
+    };
+  };
+
   # Slack development huddle - every Tuesday at 09:45
   systemd.user.services.slack-dev-huddle = {
     Unit.Description = "Join Slack development huddle";

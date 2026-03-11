@@ -7,9 +7,16 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nvf.url = "github:notashelf/nvf";
     wezterm.url = "github:wezterm/wezterm?dir=nix";
     vicinae.url = "github:vicinaehq/vicinae";
+    # Local dev: uncomment below and comment out GitHub line
+    cosmic-applet-recorder.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-recorder-applet";
+    # cosmic-applet-recorder.url = "github:Sindrir/cosmic-ext-recorder-applet";
     #nixgl = {
     #  url = "github:nix-community/nixGL";
     #  inputs.nixpkgs.follows = "nixpkgs";
@@ -34,6 +41,7 @@
       # Custom packages overlay
       customPackagesOverlay = _final: prev: {
         super-stt = prev.callPackage ./packages/super-stt { };
+        cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
       };
 
       # Apply overlays to pkgs
@@ -56,7 +64,7 @@
     {
       packages.${system} = {
         my-neovim = customNeovim.neovim;
-        inherit (pkgsWithOverlays) super-stt;
+        inherit (pkgsWithOverlays) super-stt cosmic-applet-recorder;
       };
 
       checks.${system} = {
@@ -121,6 +129,7 @@
                 sharedModules = [
                   vicinae.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
+                  inputs.sops-nix.homeManagerModules.sops
                 ];
                 users.sindreo = {
                   imports = [
