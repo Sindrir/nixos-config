@@ -41,6 +41,7 @@
       # Custom packages overlay
       customPackagesOverlay = _final: prev: {
         super-stt = prev.callPackage ./packages/super-stt { };
+        docker-mcp = prev.callPackage ./packages/docker-mcp { };
         cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
       };
 
@@ -64,7 +65,7 @@
     {
       packages.${system} = {
         my-neovim = customNeovim.neovim;
-        inherit (pkgsWithOverlays) super-stt cosmic-applet-recorder;
+        inherit (pkgsWithOverlays) super-stt docker-mcp cosmic-applet-recorder;
       };
 
       checks.${system} = {
@@ -104,6 +105,7 @@
                 sharedModules = [
                   vicinae.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
+                  ./packages/docker-mcp/hm-module.nix
                 ];
                 users.sindreo = import ./home-manager/sindreo.nix;
                 backupFileExtension = "bak";
@@ -129,6 +131,7 @@
                 sharedModules = [
                   vicinae.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
+                  ./packages/docker-mcp/hm-module.nix
                   inputs.sops-nix.homeManagerModules.sops
                 ];
                 users.sindreo = {
@@ -155,6 +158,7 @@
           modules = [
             vicinae.homeManagerModules.default
             ./packages/link-whisperer/hm-module.nix
+            ./packages/docker-mcp/hm-module.nix
             { home.packages = [ customNeovim.neovim ]; }
             ./home-manager/sindreo.nix
           ];

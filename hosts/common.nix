@@ -69,6 +69,10 @@
   services = {
     flatpak.enable = true;
     displayManager.cosmic-greeter.enable = true;
+
+    # Gnome Keyring — system-wide secret store (libsecret / secret-service protocol).
+    # Used by: Docker MCP secrets, MongoDB Compass, VS Code, and any app using libsecret.
+    gnome.gnome-keyring.enable = true;
     xserver.xkb = {
       layout = "no";
       variant = "winkeys";
@@ -100,6 +104,13 @@
 
   # Enable realtime scheduling for PipeWire
   security.rtkit.enable = true;
+
+  # Auto-unlock gnome-keyring when the user logs in.
+  # cosmic-greeter handles the Wayland session; login covers TTY/SSH.
+  security.pam.services = {
+    login.enableGnomeKeyring = true;
+    cosmic-greeter.enableGnomeKeyring = true;
+  };
 
   # Configure console keymap
   console.keyMap = "no";

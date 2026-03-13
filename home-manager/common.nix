@@ -7,7 +7,6 @@
     mimeApps.enable = true;
   };
 
-  programs.link-whisperer.enable = true;
   #targets.genericLinux.enable = true;
   #nixpkgs.allowUnfreePredicate = _: true;
 
@@ -20,6 +19,7 @@
       cosmic-applet-recorder
 
       # CLI
+      playwright
       sqlcmd
       github-mcp-server
       openssl
@@ -32,7 +32,7 @@
       google-cloud-sdk-gce
       eza
       bat
-      neofetch
+      fastfetch
       atuin
       kubectl
       gitui
@@ -212,6 +212,23 @@
     };
   };
   programs = {
+    link-whisperer.enable = true;
+
+    # ── Docker MCP Gateway ────────────────────────────────────────────────────
+    # Pinned to v0.40.2 — bump packages/docker-mcp/default.nix to update.
+    # Browse available servers: docker mcp catalog show docker-mcp
+    docker-mcp = {
+      enable = true;
+
+      # Register the gateway as an MCP server in Claude Code (stdio transport).
+      # Claude Code will start it on demand; no separate daemon needed.
+      claudeEnable = true;
+
+      servers = [
+        "context7" # Up-to-date code documentation for LLMs
+      ];
+    };
+
     home-manager.enable = true;
     wezterm = {
       enable = true;
@@ -269,6 +286,7 @@
       enable = true;
       nix-direnv.enable = true;
     };
+
   };
 
   # Vicinae configuration

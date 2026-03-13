@@ -51,10 +51,7 @@ in
     };
   };
 
-  services = {
-    gnome.gnome-keyring.enable = true;
-    xserver.videoDrivers = [ "nvidia" ];
-  };
+  services.xserver.videoDrivers = [ "nvidia" ];
   hardware = {
     nvidia = {
       modesetting.enable = true;
