@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
 
@@ -16,9 +16,18 @@
     ];
   };
 
-  # Bootloader configuration
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    # Bootloader configuration
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+
+    # v4l2loopback: virtual webcam device for webcam effects applet
+    extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+    kernelModules = [ "v4l2loopback" ];
+    extraModprobeConfig = ''
+      options v4l2loopback devices=1 video_nr=2 card_label="Virtual Webcam" exclusive_caps=1
+    '';
+  };
 
   # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.sindreo = {

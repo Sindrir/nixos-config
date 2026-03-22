@@ -85,6 +85,10 @@ in
     cifs-utils
     lshw
     wrapGAppsHook4
+
+    # CUDA toolkit for GPU-accelerated ML inference (ONNX Runtime, etc.)
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

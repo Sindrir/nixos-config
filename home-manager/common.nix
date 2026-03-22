@@ -15,10 +15,8 @@
     homeDirectory = "/home/sindreo";
     stateVersion = "25.05";
     packages = with pkgs; [
-      # <HOME>
-      cosmic-applet-recorder
-
       # CLI
+      gh
       playwright
       sqlcmd
       github-mcp-server
