@@ -1,5 +1,8 @@
 { config, pkgs, ... }:
 
+let
+  dotfiles = "${config.home.homeDirectory}/nixos-config/home-manager/dotfiles";
+in
 {
   xdg = {
     enable = true;
@@ -16,6 +19,9 @@
     stateVersion = "25.05";
     packages = with pkgs; [
       # CLI
+      github-copilot-cli
+      texliveSmall
+      pandoc
       gh
       playwright
       sqlcmd
@@ -26,6 +32,7 @@
       mermaid-cli
       helm
       imagemagick
+      openjpeg
       python3
       google-cloud-sdk-gce
       eza
@@ -49,7 +56,7 @@
       unzip
       gcc
       s3fs
-      mountpoint-s3
+      # mountpoint-s3 # Broken for now
       jq
       lsof
       sshfs
@@ -64,10 +71,10 @@
       distrobox-tui
       openconnect
       texlivePackages.pdfjam
+      nodejs_24
 
       # Shell
       fish
-      oh-my-fish
       starship
 
       ## Shell extras
@@ -104,6 +111,7 @@
 
       ## Music
       spotify
+      mixing-station
 
       ## General
       nordpass # Password manager
@@ -159,41 +167,44 @@
 
     file = {
       ".config/fish" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/fish";
         recursive = true;
       };
       ".config/helix" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/helix;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/helix";
         recursive = true;
       };
       ".config/starship.toml" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/starship/starship.toml;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/starship/starship.toml";
       };
       ".config/nvim" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/nvim;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/nvim";
         recursive = true;
       };
+      ".config/yazi" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi";
+      };
       ".config/hypr/hyprland.conf" = {
-        source = ./dotfiles/config/hypr/hyprland.conf;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/hypr/hyprland.conf";
       };
       ".config/hypr/hyprpaper.conf" = {
-        source = ./dotfiles/config/hypr/hyprpaper.conf;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/hypr/hyprpaper.conf";
       };
       # AI Agents symlinks (all point to the same shared config folder)
       ".config/opencode" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
       ".config/claude-code" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
       ".config/gemini-cli" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
       ".config/codex" = {
-        source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/ai-agents;
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
       #       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
@@ -212,6 +223,43 @@
   programs = {
     link-whisperer.enable = true;
 
+    # ── Claude Code settings ──────────────────────────────────────────────────
+    # Declaratively manages ~/.claude/settings.json via activation script.
+    # Add MCP servers per-machine in the relevant host file (e.g. work.nix).
+    claude-code-settings = {
+      enable = true;
+
+      settings = {
+        alwaysThinkingEnabled = true;
+        voiceEnabled = false;
+      };
+
+      marketplaces = {
+        "context-mode" = {
+          source = {
+            source = "github";
+            repo = "mksglu/context-mode";
+          };
+        };
+      };
+
+      plugins = {
+        "superpowers@claude-plugins-official" = true;
+        "typescript-lsp@claude-plugins-official" = true;
+        "kotlin-lsp@claude-plugins-official" = true;
+        "rust-analyzer-lsp@claude-plugins-official" = true;
+        "lua-lsp@claude-plugins-official" = true;
+        "context-mode@context-mode" = true;
+      };
+
+      mcpServers = {
+        atlassian = {
+          type = "http";
+          url = "https://mcp.atlassian.com/v1/mcp";
+        };
+      };
+    };
+
     # ── Docker MCP Gateway ────────────────────────────────────────────────────
     # Pinned to v0.40.2 — bump packages/docker-mcp/default.nix to update.
     # Browse available servers: docker mcp catalog show docker-mcp
@@ -224,6 +272,8 @@
 
       servers = [
         "context7" # Up-to-date code documentation for LLMs
+        "fetch" # Fetch URLs and convert to markdown
+        "sequentialthinking" # Step-by-step reasoning tool
       ];
     };
 

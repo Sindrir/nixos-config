@@ -10,6 +10,14 @@ function ni
 end
 complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' ~/nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
 alias k="kubectl"
+function plaude
+    mkdir -p ~/.claude-personal
+    if not test -L ~/.claude-personal/settings.json
+        ln -sf ~/.claude/settings.json ~/.claude-personal/settings.json
+    end
+    set -x CLAUDE_CONFIG_DIR ~/.claude-personal
+    claude $argv
+end
 
 function nurse-fix
     nixpkgs-fmt /home/sindreo/nixos-config
@@ -22,8 +30,9 @@ function nurse
         echo "Use `nurse-fix` to automatically fix issues."
         return 1
     end
-    sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#work-laptop
+    sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#(hostname)
 end
+alias qnurse="sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#(hostname)"
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
 alias ll="eza -l --icons --group-directories-first"
 alias ls="eza --icons --group-directories-first"

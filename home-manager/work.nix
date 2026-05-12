@@ -1,6 +1,13 @@
-{ lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
+  # ── GitHub MCP server (work-laptop only — requires SOPS secrets) ─────────
+  # Adds the github entry to mcpServers alongside the base config in common.nix.
+  programs.claude-code-settings.mcpServers.github = {
+    type = "stdio";
+    command = "${config.home.homeDirectory}/.claude/github-mcp-wrapper.sh";
+  };
+
   # ── GitHub MCP wrapper (GitHub App → installation token → github-mcp-server)
   home.file.".claude/github-mcp-wrapper.sh" = {
     executable = true;
@@ -42,26 +49,6 @@
       exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio
     '';
   };
-
-  # ── Inject GitHub and Atlassian MCP servers into ~/.claude/settings.json ──
-  home.activation.setupClaudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    _claude_settings="$HOME/.claude/settings.json"
-    if test -f "$_claude_settings"; then
-      ${pkgs.jq}/bin/jq --arg wrapper "$HOME/.claude/github-mcp-wrapper.sh" '
-        .mcpServers = ((.mcpServers // {}) + {
-          "github": {
-            "type": "stdio",
-            "command": $wrapper
-          },
-          "atlassian": {
-            "type": "http",
-            "url": "https://mcp.atlassian.com/v1/mcp"
-          }
-        })
-      ' "$_claude_settings" > "$_claude_settings.tmp" \
-      && mv "$_claude_settings.tmp" "$_claude_settings"
-    fi
-  '';
 
   sops = {
     age.keyFile = "/home/sindreo/.config/sops/age/keys.txt";

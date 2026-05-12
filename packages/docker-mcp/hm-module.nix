@@ -72,7 +72,6 @@ in
         # key=value pairs for each MCP server that requires credentials.
         setupClaudeMcpGateway = lib.mkIf cfg.claudeEnable
           (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                        _claude_settings="$HOME/.claude/settings.json"
                         _secrets_file="$HOME/.docker/mcp/secrets.env"
 
                         # Create secrets file template if it does not exist yet
@@ -89,25 +88,25 @@ in
                           chmod 600 "$_secrets_file"
                         fi
 
-                        if test -f "$_claude_settings"; then
-                          echo "docker-mcp: updating gateway entry in Claude Code MCP servers"
-                          ${pkgs.jq}/bin/jq \
-                            --arg cmd "${docker-mcp-pkg}/bin/docker-mcp" \
-                            --arg servers "${serverList}" \
-                            --arg secrets "$_secrets_file" \
-                            '. + {
-                              mcpServers: ((.mcpServers // {}) + {
-                                "docker-mcp": {
-                                  "command": $cmd,
-                                  "args": ["mcp", "gateway", "run",
-                                           "--transport", "stdio",
-                                           "--servers", $servers,
-                                           "--secrets", $secrets]
-                                }
-                              })
-                            }' "$_claude_settings" > "$_claude_settings.tmp" \
-                          && mv "$_claude_settings.tmp" "$_claude_settings"
+                        # MCP servers live in ~/.claude.json (top-level mcpServers), not settings.json
+                        _claude_json="$HOME/.claude.json"
+                        if ! test -f "$_claude_json"; then
+                          echo '{}' > "$_claude_json"
                         fi
+                        echo "docker-mcp: updating gateway entry in Claude Code MCP servers"
+                        ${pkgs.jq}/bin/jq \
+                          --arg cmd "${docker-mcp-pkg}/bin/docker-mcp" \
+                          --arg servers "${serverList}" \
+                          --arg secrets "$_secrets_file" \
+                          '.mcpServers = ((.mcpServers // {}) + {
+                            "docker-mcp": {
+                              "command": $cmd,
+                              "args": ["gateway", "run",
+                                       "--servers", $servers,
+                                       "--secrets", $secrets]
+                            }
+                          })' "$_claude_json" > "$_claude_json.tmp" \
+                        && mv "$_claude_json.tmp" "$_claude_json"
           '');
       };
     };
