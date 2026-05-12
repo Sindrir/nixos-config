@@ -13,6 +13,12 @@
       ../../modules/de/cosmic.nix
     ];
 
+  musnix.enable = true;
+  musnix.kernel.realtime = true;
+  musnix.rtcqs.enable = true;
+
+  users.users.sindreo.extraGroups = [ "audio" ];
+
   # Add extra home-manager packages specific to this host
   home-manager.users.sindreo = {
     home.packages = with pkgs; [

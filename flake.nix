@@ -22,6 +22,7 @@
     # Local dev: uncomment below and comment out GitHub line
     cosmic-ext-transcriber.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-transcriber";
     # cosmic-ext-transcriber.url = "github:Sindrir/cosmic-ext-transcriber";
+    musnix.url = "github:musnix/musnix";
     #nixgl = {
     #  url = "github:nix-community/nixGL";
     #  inputs.nixpkgs.follows = "nixpkgs";
@@ -99,6 +100,7 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./hosts/home-desktop/configuration.nix
+            inputs.musnix.nixosModules.musnix
             home-manager.nixosModules.default
             # Apply custom packages overlay
             {
