@@ -13,9 +13,11 @@
       ../../modules/de/cosmic.nix
     ];
 
-  musnix.enable = true;
-  musnix.kernel.realtime = true;
-  musnix.rtcqs.enable = true;
+  musnix = {
+    enable = true;
+    kernel.realtime = true;
+    rtcqs.enable = true;
+  };
 
   users.users.sindreo.extraGroups = [ "audio" ];
 

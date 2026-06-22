@@ -15,12 +15,11 @@
     wezterm.url = "github:wezterm/wezterm?dir=nix";
     vicinae.url = "github:vicinaehq/vicinae";
     # Local dev: uncomment below and comment out GitHub lines
-    cosmic-applet-recorder.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-recorder-applet";
+    # cosmic-applet-recorder.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-recorder-applet";
     # cosmic-applet-recorder.url = "github:Sindrir/cosmic-ext-recorder-applet";
     # cosmic-applet-webcam-effects.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-webcam-effects-applet";
-    cosmic-applet-webcam-effects.url = "github:Sindrir/cosmic-ext-webcam-effects-applet";
-    # Local dev: uncomment below and comment out GitHub line
-    cosmic-ext-transcriber.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-transcriber";
+    # cosmic-applet-webcam-effects.url = "github:Sindrir/cosmic-ext-webcam-effects-applet";
+    # cosmic-ext-transcriber.url = "path:/home/sindreo/projects/cosmic/cosmic-ext-transcriber";
     # cosmic-ext-transcriber.url = "github:Sindrir/cosmic-ext-transcriber";
     musnix.url = "github:musnix/musnix";
     #nixgl = {
@@ -49,9 +48,9 @@
         super-stt = prev.callPackage ./packages/super-stt { };
         docker-mcp = prev.callPackage ./packages/docker-mcp { };
         mixing-station = prev.callPackage ./packages/mixing-station { };
-        cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
-        cosmic-applet-webcam-effects = inputs.cosmic-applet-webcam-effects.packages.${system}.default;
-        cosmic-ext-transcriber = inputs.cosmic-ext-transcriber.packages.${system}.default;
+        # cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
+        # cosmic-applet-webcam-effects = inputs.cosmic-applet-webcam-effects.packages.${system}.default;
+        # cosmic-ext-transcriber = inputs.cosmic-ext-transcriber.packages.${system}.default;
       };
 
       # Apply overlays to pkgs
@@ -74,7 +73,10 @@
     {
       packages.${system} = {
         my-neovim = customNeovim.neovim;
-        inherit (pkgsWithOverlays) super-stt docker-mcp mixing-station cosmic-applet-recorder cosmic-applet-webcam-effects cosmic-ext-transcriber;
+        inherit (pkgsWithOverlays) super-stt docker-mcp mixing-station;
+        # cosmic-applet-recorder = pkgsWithOverlays.cosmic-applet-recorder;
+        # cosmic-applet-webcam-effects = pkgsWithOverlays.cosmic-applet-webcam-effects;
+        # cosmic-ext-transcriber = pkgsWithOverlays.cosmic-ext-transcriber;
       };
 
       checks.${system} = {
@@ -114,9 +116,9 @@
                 useGlobalPkgs = true;
                 sharedModules = [
                   vicinae.homeManagerModules.default
-                  inputs.cosmic-applet-recorder.homeManagerModules.default
-                  inputs.cosmic-applet-webcam-effects.homeManagerModules.default
-                  inputs.cosmic-ext-transcriber.homeManagerModules.default
+                  # inputs.cosmic-applet-recorder.homeManagerModules.default
+                  # inputs.cosmic-applet-webcam-effects.homeManagerModules.default
+                  # inputs.cosmic-ext-transcriber.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
                   ./packages/docker-mcp/hm-module.nix
                   ./packages/claude-code/hm-module.nix
@@ -144,9 +146,9 @@
                 useGlobalPkgs = true;
                 sharedModules = [
                   vicinae.homeManagerModules.default
-                  inputs.cosmic-applet-recorder.homeManagerModules.default
-                  inputs.cosmic-applet-webcam-effects.homeManagerModules.default
-                  inputs.cosmic-ext-transcriber.homeManagerModules.default
+                  # inputs.cosmic-applet-recorder.homeManagerModules.default
+                  # inputs.cosmic-applet-webcam-effects.homeManagerModules.default
+                  # inputs.cosmic-ext-transcriber.homeManagerModules.default
                   ./packages/link-whisperer/hm-module.nix
                   ./packages/docker-mcp/hm-module.nix
                   ./packages/claude-code/hm-module.nix

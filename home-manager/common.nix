@@ -30,7 +30,7 @@ in
       youtube-tui
       yt-dlp
       mermaid-cli
-      helm
+      kubernetes-helm
       imagemagick
       openjpeg
       python3
@@ -40,12 +40,12 @@ in
       fastfetch
       atuin
       kubectl
+      kubecolor
       gitui
       lazygit
       networkmanagerapplet
       networkmanager-openconnect
       usbutils
-      fnm
       devbox
       pre-commit
       posting
@@ -257,6 +257,10 @@ in
           type = "http";
           url = "https://mcp.atlassian.com/v1/mcp";
         };
+        nixos = {
+          command = "nix";
+          args = [ "run" "github:utensils/mcp-nixos" "--" ];
+        };
       };
     };
 
@@ -335,6 +339,33 @@ in
       nix-direnv.enable = true;
     };
 
+  };
+
+  systemd.user.services.oo7-daemon = {
+    Unit = {
+      Description = "Secret service (oo7 implementation)";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.oo7-server}/libexec/oo7-daemon";
+      Restart = "on-failure";
+      TimeoutStartSec = "30s";
+      TimeoutStopSec = "30s";
+      NoNewPrivileges = true;
+      PrivateUsers = "yes";
+      ProtectSystem = "full";
+      PrivateTmp = true;
+      PrivateDevices = true;
+      PrivateNetwork = true;
+      ProtectKernelTunables = true;
+      ProtectKernelModules = true;
+      ProtectControlGroups = true;
+      MemoryDenyWriteExecute = true;
+      ProtectClock = true;
+    };
   };
 
   # Vicinae configuration

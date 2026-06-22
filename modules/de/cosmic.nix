@@ -17,18 +17,24 @@ in
 {
   services.desktopManager.cosmic.enable = true;
 
+  services.dbus.packages = with pkgs; [ oo7-server oo7-portal ];
+
   environment = {
     sessionVariables = {
       COSMIC_DATA_CONTROL_ENABLED = "1";
     };
     systemPackages = with pkgs; [
       minimon-wrapped
+      oo7-portal
     ];
   };
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-cosmic ];
-    config.cosmic.default = [ "cosmic" "gtk" ];
+    extraPortals = with pkgs; [ xdg-desktop-portal-cosmic oo7-portal ];
+    config.cosmic = {
+      default = [ "cosmic" "gtk" ];
+      "org.freedesktop.impl.portal.Secret" = [ "oo7-portal" ];
+    };
   };
 }

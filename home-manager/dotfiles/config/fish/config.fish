@@ -9,7 +9,8 @@ function ni
     grep -n "$tag" ~/nixos-config/home-manager/common.nix | grep -o -P '\d+' | xargs -I % $EDITOR +% ~/nixos-config/home-manager/common.nix
 end
 complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' ~/nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
-alias k="kubectl"
+alias k="kubecolor"
+alias kubectl="kubecolor"
 function plaude
     mkdir -p ~/.claude-personal
     if not test -L ~/.claude-personal/settings.json

@@ -1,16 +1,16 @@
 [plugin]
 prepend_previewers = [
-  { name = "*.jp2", run = "jp2" },
-  { name = "*.jpx", run = "jp2" },
-  { name = "*.j2k", run = "jp2" },
+  { url = "*.jp2", run = "jp2" },
+  { url = "*.jpx", run = "jp2" },
+  { url = "*.j2k", run = "jp2" },
   { mime = "image/jp2",      run = "jp2" },
   { mime = "image/jpeg2000", run = "jp2" },
   { mime = "image/jpx",      run = "jp2" },
 ]
 prepend_preloaders = [
-  { name = "*.jp2", run = "jp2" },
-  { name = "*.jpx", run = "jp2" },
-  { name = "*.j2k", run = "jp2" },
+  { url = "*.jp2", run = "jp2" },
+  { url = "*.jpx", run = "jp2" },
+  { url = "*.j2k", run = "jp2" },
   { mime = "image/jp2",      run = "jp2" },
   { mime = "image/jpeg2000", run = "jp2" },
   { mime = "image/jpx",      run = "jp2" },
