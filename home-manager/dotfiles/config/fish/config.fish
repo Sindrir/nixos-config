@@ -42,11 +42,15 @@ function nurse-fix
 end
 function nurse
     sudo -v
-    if not nix flake check /home/sindreo/nixos-config
+    set -l flake_dir /home/sindreo/nixos-config
+    if test -n "(git -C $flake_dir status --porcelain)"
+        echo "warning: Git tree '$flake_dir' is dirty"
+    end
+    if not nix --option warn-dirty false flake check $flake_dir
         echo "Use `nurse-fix` to automatically fix issues."
         return 1
     end
-    sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#(hostname)
+    sudo nixos-rebuild switch --impure --option warn-dirty false --flake $flake_dir#(hostname)
 end
 alias qnurse="sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#(hostname)"
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
