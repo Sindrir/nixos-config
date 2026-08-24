@@ -365,7 +365,11 @@ in
         side-by-side = true;
       };
     };
-    fzf.enable = true;
+    fzf = {
+      enable = true;
+      # atuin owns Ctrl-R; avoid the nushell Ctrl-R conflict between the two.
+      historyWidget.nushell.command = "";
+    };
     tealdeer = {
       enable = true;
       settings.updates.auto_update = true;
