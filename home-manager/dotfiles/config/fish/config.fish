@@ -44,7 +44,10 @@ function nurse
     sudo -v
     set -l flake_dir /home/sindreo/nixos-config
     if test -n "(git -C $flake_dir status --porcelain)"
-        echo "warning: Git tree '$flake_dir' is dirty"
+        set_color -o yellow
+        echo -n "warning:" >&2
+        set_color normal
+        echo " Git tree '$flake_dir' is dirty" >&2
     end
     if not nix --option warn-dirty false flake check $flake_dir
         echo "Use `nurse-fix` to automatically fix issues."
