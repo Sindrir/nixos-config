@@ -9,12 +9,27 @@ function ni
     grep -n "$tag" ~/nixos-config/home-manager/common.nix | grep -o -P '\d+' | xargs -I % $EDITOR +% ~/nixos-config/home-manager/common.nix
 end
 complete -c ni --no-files -a "(sed -n '/packages = with pkgs; \[/,/^\s*];/p' ~/nixos-config/home-manager/common.nix | grep '^\s*#' | sed 's/#//g; s/^\s*//')"
-alias k="kubecolor"
+function k --wraps=kubecolor
+    set -l ns (command kubectl config view --minify -o jsonpath='{..namespace}' 2>/dev/null)
+    if test -n "$ns"
+        kubecolor --as="$ns" $argv
+    else
+        kubecolor $argv
+    end
+end
 alias kubectl="kubecolor"
-function plaude
+function plaude --wraps=claude
     mkdir -p ~/.claude-personal
-    if not test -L ~/.claude-personal/settings.json
-        ln -sf ~/.claude/settings.json ~/.claude-personal/settings.json
+    # Use a personal-specific settings file that excludes work-account OAuth MCPs
+    set personal_settings ~/.claude-personal/settings.json
+    if not test -f $personal_settings; or test -L $personal_settings
+        # Generate settings without the atlassian HTTP OAuth MCP (tied to work account)
+        python3 -c "
+import json, sys
+d = json.load(open(\"$HOME/.claude/settings.json\"))
+d.setdefault('mcpServers', {}).pop('atlassian', None)
+json.dump(d, sys.stdout, indent=2)
+" > $personal_settings
     end
     set -x CLAUDE_CONFIG_DIR ~/.claude-personal
     claude $argv
@@ -38,11 +53,21 @@ alias furse="nix flake update --flake /home/sindreo/nixos-config"
 alias ll="eza -l --icons --group-directories-first"
 alias ls="eza --icons --group-directories-first"
 alias tree="eza --tree --icons --group-directories-first"
+alias du="dust"
+alias df="duf"
+alias ps="procs"
+function fish_command_not_found
+    command-not-found $argv
+end
+
 zoxide init --cmd cd fish | source
+fzf --fish | source
+atuin init fish | source
+pay-respects init fish | source
 starship init fish | source
 direnv hook fish | source
 jwt completion fish | source
-function y
+function y --wraps=yazi
     set tmp (mktemp -t "yazi-cwd.XXXXXX")
     yazi $argv --cwd-file="$tmp"
     if read -z cwd <"$tmp"; and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]

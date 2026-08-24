@@ -17,7 +17,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://mixingstation.app/backend/api/web/download/update/mixing-station-pc/release";
-    hash = "sha256-qOSae7YsP5LmIwx23saemnoPmtqOLnftEohOI5jy1oQ=";
+    hash = "sha256-t6yY461Doi5gQV2wAzCw0cYogCRB8VZx1kXZAqjftm0=";
   };
 
   nativeBuildInputs = [

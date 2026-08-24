@@ -38,7 +38,6 @@ in
       eza
       bat
       fastfetch
-      atuin
       kubectl
       kubecolor
       gitui
@@ -64,7 +63,6 @@ in
       presenterm
       steam-run
       codex
-      gemini-cli
       opencode
       claude-code
       distrobox
@@ -79,8 +77,16 @@ in
 
       ## Shell extras
       zoxide
-      fzf
       yazi
+      fd
+      dust
+      duf
+      procs
+      sd
+      ouch
+      xh
+      viddy
+      glow
 
       ## LSP
       typescript-language-server
@@ -115,6 +121,7 @@ in
 
       ## General
       nordpass # Password manager
+      kdePackages.okular
 
       ## Web
       nyxt
@@ -153,6 +160,7 @@ in
 
       ## DB
       mongodb-compass
+      postgresql # pg_dump, pg_restore, etc.
 
       ## Docker
       docker
@@ -196,10 +204,6 @@ in
         recursive = true;
       };
       ".config/claude-code" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
-        recursive = true;
-      };
-      ".config/gemini-cli" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
@@ -338,6 +342,35 @@ in
       enable = true;
       nix-direnv.enable = true;
     };
+    atuin = {
+      enable = true;
+      enableFishIntegration = false;
+      settings.keys.accept_past_line_start = true;
+    };
+    git = {
+      enable = true;
+      lfs.enable = true;
+      settings = {
+        user.name = "Sindre Østrem";
+        user.email = "sindre.ostrem@nb.no";
+        core.editor = "hx";
+        init.defaultBranch = "main";
+      };
+    };
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+      options = {
+        navigate = true;
+        side-by-side = true;
+      };
+    };
+    fzf.enable = true;
+    tealdeer = {
+      enable = true;
+      settings.updates.auto_update = true;
+    };
+    pay-respects.enable = true;
 
   };
 
@@ -369,14 +402,11 @@ in
   };
 
   # Vicinae configuration
-  services.vicinae = {
+  programs.vicinae = {
     enable = true;
     systemd = {
       enable = true;
       autoStart = true;
-      environment = {
-        USE_LAYER_SHELL = 1;
-      };
     };
   };
 
