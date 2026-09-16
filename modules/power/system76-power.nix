@@ -179,6 +179,15 @@ in
   };
 
   config = mkIf cfg.enable {
+    # nixpkgs' cosmic.nix now defaults hardware.system76.power-daemon.enable
+    # to true whenever power-profiles-daemon/tuned are both off (which they
+    # are here, see below) — that pulls in nixos/modules/hardware/system-76.nix's
+    # own systemd.services.system76-power definition, which collides with
+    # ours (different `description`). We already reimplement the daemon
+    # service ourselves plus AC/battery profile switching on top of it, so
+    # disable nixpkgs' copy rather than trying to reconcile the two.
+    hardware.system76.power-daemon.enable = false;
+
     # Install system76-power, brightnessctl, and kmod (if runtime PM enabled)
     environment.systemPackages = [
       cfg.package
