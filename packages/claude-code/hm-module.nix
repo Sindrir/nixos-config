@@ -113,11 +113,39 @@ in
         "$_claude" > "$_claude.tmp" \
       && mv "$_claude.tmp" "$_claude"
 
-      # Install any enabled plugins that are not yet present
+      # Refresh marketplace metadata so the update step below can see new
+      # plugin versions (best-effort — a rebuild shouldn't fail offline).
+      # Logged either way so a network failure doesn't vanish silently.
+      ${lib.optionalString (pluginsToInstall != [ ]) ''
+        if _mp_out=$(${pkgs.claude-code}/bin/claude plugin marketplace update 2>&1); then
+          echo "claude-code: [ok] refreshed marketplace metadata"
+        else
+          echo "claude-code: [FAILED] refreshing marketplace metadata (offline?):"
+          echo "$_mp_out" | sed 's/^/  /'
+        fi
+      ''}
+
+      # Install any enabled plugins that are not yet present, and update ones
+      # that are already installed. The CLI has no version pinning, so "kept
+      # current by Nix" means "updated to latest on every switch" — best-effort
+      # (a rebuild shouldn't fail offline), but every attempt is logged as
+      # [ok]/[FAILED] with the CLI's own output so a silent failure is visible
+      # in the `nurse`/home-manager-switch output instead of just vanishing.
       ${lib.concatMapStrings (plugin: ''
-        if ! ${pkgs.jq}/bin/jq -e --arg p '${plugin}' '.plugins | has($p)' "$_installed" > /dev/null 2>&1; then
-          echo "claude-code: installing plugin ${plugin}"
-          ${pkgs.claude-code}/bin/claude plugin install '${plugin}' || true
+        if ${pkgs.jq}/bin/jq -e --arg p '${plugin}' '.plugins | has($p)' "$_installed" > /dev/null 2>&1; then
+          if _plugin_out=$(${pkgs.claude-code}/bin/claude plugin update '${plugin}' 2>&1); then
+            echo "claude-code: [ok] update ${plugin}: $_plugin_out"
+          else
+            echo "claude-code: [FAILED] update ${plugin}:"
+            echo "$_plugin_out" | sed 's/^/  /'
+          fi
+        else
+          if _plugin_out=$(${pkgs.claude-code}/bin/claude plugin install '${plugin}' 2>&1); then
+            echo "claude-code: [ok] install ${plugin}: $_plugin_out"
+          else
+            echo "claude-code: [FAILED] install ${plugin}:"
+            echo "$_plugin_out" | sed 's/^/  /'
+          fi
         fi
       '') pluginsToInstall}
     '';
