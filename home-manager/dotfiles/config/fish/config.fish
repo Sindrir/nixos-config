@@ -20,17 +20,16 @@ end
 alias kubectl="kubecolor"
 function plaude --wraps=claude
     mkdir -p ~/.claude-personal
-    # Use a personal-specific settings file that excludes work-account OAuth MCPs
+    # Use a personal-specific settings file that excludes work-account OAuth MCPs.
+    # Regenerated from ~/.claude/settings.json on every run so it never drifts
+    # out of sync with the Nix-managed main profile (plugins, MCPs, etc).
     set personal_settings ~/.claude-personal/settings.json
-    if not test -f $personal_settings; or test -L $personal_settings
-        # Generate settings without the atlassian HTTP OAuth MCP (tied to work account)
-        python3 -c "
+    python3 -c "
 import json, sys
 d = json.load(open(\"$HOME/.claude/settings.json\"))
 d.setdefault('mcpServers', {}).pop('atlassian', None)
 json.dump(d, sys.stdout, indent=2)
 " > $personal_settings
-    end
     set -x CLAUDE_CONFIG_DIR ~/.claude-personal
     claude $argv
 end
