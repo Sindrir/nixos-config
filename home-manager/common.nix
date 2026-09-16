@@ -395,32 +395,21 @@ in
 
   };
 
-  systemd.user.services.oo7-daemon = {
-    Unit = {
-      Description = "Secret service (oo7 implementation)";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.oo7-server}/libexec/oo7-daemon";
-      Restart = "on-failure";
-      TimeoutStartSec = "30s";
-      TimeoutStopSec = "30s";
-      NoNewPrivileges = true;
-      PrivateUsers = "yes";
-      ProtectSystem = "full";
-      PrivateTmp = true;
-      PrivateDevices = true;
-      PrivateNetwork = true;
-      ProtectKernelTunables = true;
-      ProtectKernelModules = true;
-      ProtectControlGroups = true;
-      MemoryDenyWriteExecute = true;
-      ProtectClock = true;
-    };
-  };
+  # NOTE: there used to be a systemd.user.services.oo7-daemon unit here,
+  # added 2026-06-22 to back COSMIC's XDG portal secret access. It competed
+  # with services.gnome.gnome-keyring (hosts/common.nix, since 2026-03-13,
+  # with PAM auto-unlock wiring and real consumers: VS Code, MongoDB
+  # Compass's --password-store=gnome-libsecret) for the same D-Bus name
+  # (org.freedesktop.secrets) — only one can ever hold it, gnome-keyring
+  # always won, so oo7-daemon has been permanently failing
+  # (Zbus(NameTaken) -> start-limit-hit) on every login/switch since June,
+  # marking the user systemd session "degraded" every time. oo7-portal (the
+  # actual XDG portal bridge, in modules/de/cosmic.nix) doesn't need
+  # oo7-daemon specifically — it talks to whatever Secret Service is on the
+  # bus, which is gnome-keyring. Removed rather than reconciled: switching
+  # to oo7 as the sole backend would mean losing already-stored secrets
+  # (VS Code sign-in, Compass connections) and hand-rolling PAM auto-unlock
+  # (oo7-daemon --login) with no NixOS module precedent to build on.
 
   # Vicinae configuration
   programs.vicinae = {
