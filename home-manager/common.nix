@@ -245,6 +245,14 @@ in
             repo = "mksglu/context-mode";
           };
         };
+        # Third-party (MIT), not from the official marketplace — see
+        # https://github.com/DietrichGebert/ponytail
+        "ponytail" = {
+          source = {
+            source = "github";
+            repo = "DietrichGebert/ponytail";
+          };
+        };
       };
 
       plugins = {
@@ -253,7 +261,16 @@ in
         "kotlin-lsp@claude-plugins-official" = true;
         "rust-analyzer-lsp@claude-plugins-official" = true;
         "lua-lsp@claude-plugins-official" = true;
+        # Its PreToolUse hooks intercept Bash/WebFetch/Read/Grep/Agent/all
+        # mcp__ tools and redirect them to its own ctx_* MCP tools — the
+        # intended workflow, not a bug. Route large-output work through
+        # ctx_batch_execute/ctx_execute/ctx_search accordingly instead of
+        # raw Bash/WebFetch to avoid the block message; ordinary small reads,
+        # file edits, and git/nix-shell commands are unaffected.
         "context-mode@context-mode" = true;
+        "ponytail@ponytail" = true;
+        "claude-md-management@claude-plugins-official" = true;
+        "playwright@claude-plugins-official" = true;
       };
 
       mcpServers = {
