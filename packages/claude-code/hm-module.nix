@@ -87,6 +87,18 @@ in
 
   config = lib.mkIf cfg.enable {
     home.activation.claudeCodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      # The systemd-managed home-manager activation environment has a
+      # minimal PATH (coreutils/findutils/grep/sed/systemd only) — no git,
+      # no ssh. `claude plugin`'s marketplace/install/update subcommands
+      # shell out to bare `git` (and `ssh` for SSH-remote clones) found via
+      # PATH; when that lookup fails it surfaces as a confusing
+      # "ERR_STREAM_PREMATURE_CLOSE"/"Premature close" instead of a clear
+      # "command not found" — reproduced and confirmed by isolating PATH as
+      # the only variable that flips this from failing to succeeding.
+      # Prepending (not replacing) PATH so nothing else in this generation's
+      # activation script loses anything it already had.
+      export PATH="${pkgs.git}/bin:${pkgs.openssh}/bin:$PATH"
+
       # settings.json — plugins + misc settings (enabledPlugins, alwaysThinkingEnabled, etc.)
       _settings="$HOME/.claude/settings.json"
       _installed="$HOME/.claude/plugins/installed_plugins.json"

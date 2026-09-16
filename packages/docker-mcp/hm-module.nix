@@ -56,34 +56,16 @@ in
       };
 
       activation = {
-        # ── Enable servers ────────────────────────────────────────────────────
-        # Persists the server selection in ~/.docker/mcp/ config files so that
-        # a plain `docker mcp gateway run` (without --servers) also works.
-        setupDockerMcpServers = lib.mkIf (cfg.servers != [ ])
-          (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-            echo "docker-mcp: enabling servers: ${lib.concatStringsSep ", " cfg.servers}"
-
-            # Retry a couple of times — this can fail transiently (Docker
-            # daemon not up yet, registry/network hiccup) even when nothing
-            # is actually wrong. Logged as [ok]/[FAILED] either way instead
-            # of the previous silent `|| true`.
-            _dm_attempt=1
-            _dm_max=3
-            _dm_delay=3
-            while true; do
-              if _dm_out=$(${docker-mcp-pkg}/bin/docker-mcp server enable ${lib.concatStringsSep " " cfg.servers} 2>&1); then
-                echo "docker-mcp: [ok] enable servers: $_dm_out"
-                break
-              fi
-              if [ "$_dm_attempt" -ge "$_dm_max" ]; then
-                echo "docker-mcp: [FAILED] enable servers:"
-                echo "$_dm_out" | sed 's/^/  /'
-                break
-              fi
-              _dm_attempt=$((_dm_attempt + 1))
-              sleep "$_dm_delay"
-            done
-          '');
+        # NOTE: there used to be a setupDockerMcpServers step here running
+        # `docker mcp server enable <servers>`, to persist the server
+        # selection so a bare `docker mcp gateway run` (without --servers)
+        # would also work. That subcommand was removed as of docker-mcp
+        # v0.43.x — it now prints "This command is obsolete. See `docker mcp
+        # profile server add --help` instead." and does nothing. Not
+        # migrating to the new profile/catalog:// model: the Claude Code MCP
+        # entry below always passes `--servers` explicitly
+        # (setupClaudeMcpGateway), which still works unchanged — the removed
+        # step was only ever a CLI convenience nobody actually depended on.
 
         # ── Claude Code MCP server entry ───────────────────────────────────────
         # Always writes the gateway entry so args (--servers, --secrets) stay
