@@ -5,7 +5,7 @@ let
   docker-mcp-pkg = pkgs.callPackage ./default.nix { };
 
   # Pinned version — update default.nix to bump this
-  installedVersion = "0.40.2";
+  installedVersion = "0.43.3";
 
   # Space-separated server names for the --servers flag
   serverList = lib.concatStringsSep "," cfg.servers;

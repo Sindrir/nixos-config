@@ -5,15 +5,15 @@
 }:
 
 let
-  version = "0.40.2";
+  version = "0.43.3";
   sources = {
     x86_64-linux = {
       url = "https://github.com/docker/mcp-gateway/releases/download/v${version}/docker-mcp-linux-amd64.tar.gz";
-      hash = "sha256-UOI4gcKWgftGwzzebDvc8UztTOcpl2acE5ObNHJdFvc=";
+      hash = "sha256-05cCtMFQ1eluWc89kKKLm7KoXKgd3QXYcSa+CEkjIEk=";
     };
     aarch64-linux = {
       url = "https://github.com/docker/mcp-gateway/releases/download/v${version}/docker-mcp-linux-arm64.tar.gz";
-      hash = "sha256-ev9RqRoUjBqGYzhVA0dJ4zOSekTNr1ii+1Ed2scdlIA=";
+      hash = "sha256-JZ0C+PT6D4KvKj+1oL38/lULWQKUt0rxCTE/4yxybt4=";
     };
   };
   source = sources.${stdenv.hostPlatform.system} or (throw "Unsupported platform: ${stdenv.hostPlatform.system}");
