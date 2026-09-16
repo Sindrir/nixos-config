@@ -118,6 +118,32 @@ in
         "$_claude" > "$_claude.tmp" \
       && mv "$_claude.tmp" "$_claude"
 
+      # Retry helper for the network-dependent steps below (marketplace
+      # add/refresh, plugin install/update): these fail intermittently
+      # under nixos-rebuild's heavy concurrent I/O even when the target
+      # repo is perfectly healthy (observed: same command succeeds 3/3
+      # run standalone right after a `nurse` run failed it). Retries with
+      # a short backoff before giving up; last attempt's output is always
+      # returned so the [ok]/[FAILED] logging below still shows something
+      # useful either way.
+      _cc_retry() {
+        _cc_attempt=1
+        _cc_max=3
+        _cc_delay=3
+        while true; do
+          if _cc_out=$("$@" 2>&1); then
+            printf '%s' "$_cc_out"
+            return 0
+          fi
+          if [ "$_cc_attempt" -ge "$_cc_max" ]; then
+            printf '%s' "$_cc_out"
+            return 1
+          fi
+          _cc_attempt=$((_cc_attempt + 1))
+          sleep "$_cc_delay"
+        done
+      }
+
       # Register any declared marketplaces the CLI doesn't already know
       # about. Writing extraKnownMarketplaces into settings.json above is
       # NOT enough by itself — `claude plugin install` only resolves
@@ -130,7 +156,7 @@ in
 
       ${lib.concatStrings (lib.mapAttrsToList (name: m: ''
         if ! test -f "$_known_marketplaces" || ! ${pkgs.jq}/bin/jq -e --arg n '${name}' 'has($n)' "$_known_marketplaces" > /dev/null 2>&1; then
-          if _mkt_out=$(${pkgs.claude-code}/bin/claude plugin marketplace add '${m.source.repo}' 2>&1); then
+          if _mkt_out=$(_cc_retry ${pkgs.claude-code}/bin/claude plugin marketplace add '${m.source.repo}'); then
             echo "claude-code: [ok] add marketplace ${name}: $_mkt_out"
           else
             echo "claude-code: [FAILED] add marketplace ${name}:"
@@ -143,7 +169,7 @@ in
       # plugin versions (best-effort — a rebuild shouldn't fail offline).
       # Logged either way so a network failure doesn't vanish silently.
       ${lib.optionalString (pluginsToInstall != [ ]) ''
-        if _mp_out=$(${pkgs.claude-code}/bin/claude plugin marketplace update 2>&1); then
+        if _mp_out=$(_cc_retry ${pkgs.claude-code}/bin/claude plugin marketplace update); then
           echo "claude-code: [ok] refreshed marketplace metadata"
         else
           echo "claude-code: [FAILED] refreshing marketplace metadata (offline?):"
@@ -159,14 +185,14 @@ in
       # in the `nurse`/home-manager-switch output instead of just vanishing.
       ${lib.concatMapStrings (plugin: ''
         if ${pkgs.jq}/bin/jq -e --arg p '${plugin}' '.plugins | has($p)' "$_installed" > /dev/null 2>&1; then
-          if _plugin_out=$(${pkgs.claude-code}/bin/claude plugin update '${plugin}' 2>&1); then
+          if _plugin_out=$(_cc_retry ${pkgs.claude-code}/bin/claude plugin update '${plugin}'); then
             echo "claude-code: [ok] update ${plugin}: $_plugin_out"
           else
             echo "claude-code: [FAILED] update ${plugin}:"
             echo "$_plugin_out" | sed 's/^/  /'
           fi
         else
-          if _plugin_out=$(${pkgs.claude-code}/bin/claude plugin install '${plugin}' 2>&1); then
+          if _plugin_out=$(_cc_retry ${pkgs.claude-code}/bin/claude plugin install '${plugin}'); then
             echo "claude-code: [ok] install ${plugin}: $_plugin_out"
           else
             echo "claude-code: [FAILED] install ${plugin}:"

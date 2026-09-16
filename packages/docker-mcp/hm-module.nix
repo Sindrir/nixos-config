@@ -62,7 +62,27 @@ in
         setupDockerMcpServers = lib.mkIf (cfg.servers != [ ])
           (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
             echo "docker-mcp: enabling servers: ${lib.concatStringsSep ", " cfg.servers}"
-            ${docker-mcp-pkg}/bin/docker-mcp server enable ${lib.concatStringsSep " " cfg.servers} || true
+
+            # Retry a couple of times — this can fail transiently (Docker
+            # daemon not up yet, registry/network hiccup) even when nothing
+            # is actually wrong. Logged as [ok]/[FAILED] either way instead
+            # of the previous silent `|| true`.
+            _dm_attempt=1
+            _dm_max=3
+            _dm_delay=3
+            while true; do
+              if _dm_out=$(${docker-mcp-pkg}/bin/docker-mcp server enable ${lib.concatStringsSep " " cfg.servers} 2>&1); then
+                echo "docker-mcp: [ok] enable servers: $_dm_out"
+                break
+              fi
+              if [ "$_dm_attempt" -ge "$_dm_max" ]; then
+                echo "docker-mcp: [FAILED] enable servers:"
+                echo "$_dm_out" | sed 's/^/  /'
+                break
+              fi
+              _dm_attempt=$((_dm_attempt + 1))
+              sleep "$_dm_delay"
+            done
           '');
 
         # ── Claude Code MCP server entry ───────────────────────────────────────
