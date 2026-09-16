@@ -102,9 +102,7 @@
       enable = true;
       package = pkgs.plocate;
     };
-    journald.extraConfig = ''
-      SystemMaxUse=1G
-    '';
+    journald.settings.Journal.SystemMaxUse = "1G";
     displayManager.cosmic-greeter.enable = true;
 
     # Gnome Keyring — system-wide secret store (libsecret / secret-service protocol).
