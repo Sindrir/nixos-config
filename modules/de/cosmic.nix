@@ -6,7 +6,7 @@ let
     paths = [ pkgs.cosmic-ext-applet-minimon ];
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/cosmic-applet-minimon \
+      wrapProgram $out/bin/cosmic-ext-applet-minimon \
         --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
           config.hardware.nvidia.package
           pkgs.addDriverRunpath.driverLink
@@ -18,6 +18,11 @@ in
   services.desktopManager.cosmic.enable = true;
 
   services.dbus.packages = with pkgs; [ oo7-server oo7-portal ];
+
+  # PipeWire's user sockets are enabled for every user, so the greeter session can
+  # socket-activate its own wireplumber. If that happens during login it holds the
+  # Bluetooth HSP/HFP profile and the user's wireplumber fails RegisterProfile.
+  systemd.user.services.wireplumber.unitConfig.ConditionUser = "!cosmic-greeter";
 
   environment = {
     sessionVariables = {
