@@ -6,7 +6,7 @@ let
     paths = [ pkgs.cosmic-ext-applet-minimon ];
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/cosmic-applet-minimon \
+      wrapProgram $out/bin/cosmic-ext-applet-minimon \
         --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
           config.hardware.nvidia.package
           pkgs.addDriverRunpath.driverLink

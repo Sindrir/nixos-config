@@ -13,11 +13,11 @@
       ../../modules/de/cosmic.nix
     ];
 
-  musnix = {
-    enable = true;
-    kernel.realtime = true;
-    rtcqs.enable = true;
-  };
+  #musnix = {
+  #  enable = true;
+  #  kernel.realtime = true;
+  #  rtcqs.enable = true;
+  #};
 
   users.users.sindreo.extraGroups = [ "audio" ];
 
@@ -25,13 +25,12 @@
   home-manager.users.sindreo = {
     home.packages = with pkgs; [
       ## File sync
-      megasync
+      #megasync
     ];
   };
 
   environment.shellAliases = {
     tree = "eza --tree";
-    nurse = "sudo nixos-rebuild switch --flake /etc/nixos#home-desktop";
   };
   hardware = {
     nvidia = {
