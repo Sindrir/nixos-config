@@ -195,7 +195,11 @@ in
       ".config/yazi/plugins/jp2.yazi" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi/plugins/jp2.yazi";
       };
+      ".config/yazi/keymap.toml" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi/keymap.toml";
+      };
       ".config/yazi/plugins/piper.yazi".source = pkgs.yaziPlugins.piper;
+      ".config/yazi/plugins/zoom.yazi".source = pkgs.yaziPlugins.zoom;
       ".config/hypr/hyprland.conf" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/hypr/hyprland.conf";
       };
