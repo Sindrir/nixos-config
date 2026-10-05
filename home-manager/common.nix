@@ -117,7 +117,7 @@ in
 
       ## Music
       spotify
-      mixing-station
+      #mixing-station
 
       ## General
       nordpass # Password manager
@@ -136,7 +136,7 @@ in
       xdg-desktop-portal-gtk
       quick-webapps
       omnissa-horizon-client
-      scribus
+      #scribus
 
       # Programming
       ## Editors
