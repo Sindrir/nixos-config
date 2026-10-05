@@ -48,6 +48,10 @@
         super-stt = prev.callPackage ./packages/super-stt { };
         docker-mcp = prev.callPackage ./packages/docker-mcp { };
         mixing-station = prev.callPackage ./packages/mixing-station { };
+      }
+      # boost 1.91 + icu 78 need C++17 but these libs' configure forces gnu++11; drop once fixed upstream
+      // prev.lib.genAttrs [ "libqxp" "libmspub" ] (n: prev.${n}.overrideAttrs { CXXFLAGS = "-std=gnu++17"; })
+      // {
         # cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
         # cosmic-applet-webcam-effects = inputs.cosmic-applet-webcam-effects.packages.${system}.default;
         # cosmic-ext-transcriber = inputs.cosmic-ext-transcriber.packages.${system}.default;
