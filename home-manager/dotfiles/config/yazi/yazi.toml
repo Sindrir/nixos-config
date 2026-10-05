@@ -1,5 +1,6 @@
 [plugin]
 prepend_previewers = [
+  { url = "*.mdx", run = 'piper -- bat -p --color=always -l md --theme="$([ "$t" = light ] && echo GitHub || echo Dracula)" "$1"' },
   { url = "*.jp2", run = "jp2" },
   { url = "*.jpx", run = "jp2" },
   { url = "*.j2k", run = "jp2" },
