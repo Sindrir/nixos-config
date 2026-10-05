@@ -189,9 +189,13 @@ in
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/nvim";
         recursive = true;
       };
-      ".config/yazi" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi";
+      ".config/yazi/yazi.toml" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi/yazi.toml";
       };
+      ".config/yazi/plugins/jp2.yazi" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/yazi/plugins/jp2.yazi";
+      };
+      ".config/yazi/plugins/piper.yazi".source = pkgs.yaziPlugins.piper;
       ".config/hypr/hyprland.conf" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/hypr/hyprland.conf";
       };
