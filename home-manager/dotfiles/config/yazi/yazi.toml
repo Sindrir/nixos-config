@@ -16,3 +16,8 @@ prepend_preloaders = [
   { mime = "image/jpeg2000", run = "jp2" },
   { mime = "image/jpx",      run = "jp2" },
 ]
+
+[preview]
+# default 600x900 caps image previews (and zoom.yazi) well below the pane size
+max_width  = 2000
+max_height = 2000
