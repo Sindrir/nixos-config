@@ -47,6 +47,7 @@
       customPackagesOverlay = _final: prev: {
         super-stt = prev.callPackage ./packages/super-stt { };
         docker-mcp = prev.callPackage ./packages/docker-mcp { };
+        jcode = prev.callPackage ./packages/jcode { };
         mixing-station = prev.callPackage ./packages/mixing-station { };
       }
       # boost 1.91 + icu 78 need C++17 but these libs' configure forces gnu++11; drop once fixed upstream
@@ -77,7 +78,7 @@
     {
       packages.${system} = {
         my-neovim = customNeovim.neovim;
-        inherit (pkgsWithOverlays) super-stt docker-mcp mixing-station;
+        inherit (pkgsWithOverlays) super-stt docker-mcp jcode mixing-station;
         # cosmic-applet-recorder = pkgsWithOverlays.cosmic-applet-recorder;
         # cosmic-applet-webcam-effects = pkgsWithOverlays.cosmic-applet-webcam-effects;
         # cosmic-ext-transcriber = pkgsWithOverlays.cosmic-ext-transcriber;
