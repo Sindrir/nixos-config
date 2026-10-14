@@ -67,6 +67,7 @@ in
       claude-code
       jcode
       herdr
+      orca-ide
       distrobox
       distrobox-tui
       openconnect
