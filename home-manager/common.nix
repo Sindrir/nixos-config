@@ -66,6 +66,7 @@ in
       opencode
       claude-code
       jcode
+      herdr
       distrobox
       distrobox-tui
       openconnect
