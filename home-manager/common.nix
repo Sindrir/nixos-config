@@ -62,8 +62,6 @@ in
       jwt-cli
       presenterm
       steam-run
-      codex
-      opencode
       claude-code
       jcode
       herdr
@@ -209,19 +207,12 @@ in
       ".config/hypr/hyprpaper.conf" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/hypr/hyprpaper.conf";
       };
-      # AI Agents symlinks (all point to the same shared config folder)
-      ".config/opencode" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
-        recursive = true;
-      };
       ".config/claude-code" = {
         source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
         recursive = true;
       };
-      ".config/codex" = {
-        source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents";
-        recursive = true;
-      };
+      # Global instructions; Claude Code reads ~/.claude/AGENTS.md when no ~/.claude/CLAUDE.md exists
+      ".claude/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/config/ai-agents/AGENTS.md";
       #       ".config/fish/completions/kubectl.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/completions/kubectl.fish;
       #       ".config/fish/conf.d/fnm.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/fnm.fish;
       #       ".config/fish/conf.d/omf.fish".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/config/fish/conf.d/omf.fish;
