@@ -8,8 +8,8 @@ let
   # shortcut: matches names in the input text, so indirection (variables, '.e'+'nv') gets past it.
   blockSecretReads = pkgs.writeShellScript "block-secret-reads" ''
     input=$(${pkgs.jq}/bin/jq -r '.tool_input | .. | strings')
-    b='[^[:alnum:]_.-]'
-    secret='(\.env(\.[[:alnum:]_.-]+)?|application(-[[:alnum:]_.-]+)?-local\.(ya?ml|properties)|[[:alnum:]_.*-]*\.pem)'
+    b='[^[:alnum:]_.\\-]' # `\` excluded so regexes like process\.env pass
+    secret='(\.env(\.[[:alnum:]_.-]+)?|application(-[[:alnum:]_.-]+)?-local\.(ya?ml|properties|\*)|[[:alnum:]_.*-]*\.pem)'
     loader='load_dotenv|dotenv_values|find_dotenv|dotenv/config|dotenv\.config|loadEnvFile'
     if printf '%s' "$input" | ${pkgs.gnugrep}/bin/grep -qE "(^|$b)$secret($b|$)|$loader"; then
       echo "Blocked: touches a local secret file (.env, application-local.*, *.pem) or loads .env. Ask the user instead." >&2
