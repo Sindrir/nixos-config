@@ -51,6 +51,7 @@
     description = "Sindre Østrem";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     uid = 1000;
+    shell = pkgs.fish;
   };
 
   # Enable networking
@@ -160,6 +161,7 @@
 
   programs = {
     firefox.enable = true;
+    fish.enable = true;
     bash.interactiveShellInit = ''eval "$(direnv hook bash)"'';
     nix-ld.enable = true;
     nix-index.enable = true;
