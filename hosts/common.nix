@@ -183,6 +183,8 @@
   virtualisation = {
     docker = {
       enable = true;
+      # journald driver: `docker logs` returns nothing on docker 29.8.1, which breaks Testcontainers' Ryuk wait
+      logDriver = "local";
       daemon = {
         settings = {
           "runtimes" = {
