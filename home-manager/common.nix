@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/nixos-config/home-manager/dotfiles";
@@ -234,6 +234,10 @@ in
     sessionVariables = {
       BROWSER = "firefox";
     };
+    # Idempotent: writes ~/.claude/hooks/herdr-agent-state.sh and merges its hooks into settings.json.
+    activation.herdrClaudeIntegration = lib.hm.dag.entryAfter [ "claudeCodeSettings" ] ''
+      run ${pkgs.herdr}/bin/herdr integration install claude
+    '';
   };
   programs = {
     link-whisperer.enable = true;
