@@ -251,6 +251,12 @@ in
       settings = {
         alwaysThinkingEnabled = true;
         voiceEnabled = false;
+        # npm-downloaded Playwright browsers can't run on NixOS; point ad-hoc
+        # scripts at the Nix-built ones (npm `playwright` must then be 1.63.x).
+        env = {
+          PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+        };
       };
 
       marketplaces = {
@@ -285,7 +291,10 @@ in
         "context-mode@context-mode" = true;
         "ponytail@ponytail" = true;
         "claude-md-management@claude-plugins-official" = true;
-        "playwright@claude-plugins-official" = true;
+        # Runs `npx @playwright/mcp@latest`, whose downloaded browsers can't run
+        # on NixOS; replaced by the playwright MCP server below. false (not
+        # removed) so the settings merge disables it on machines that have it.
+        "playwright@claude-plugins-official" = false;
       };
 
       mcpServers = {
@@ -297,6 +306,8 @@ in
           command = "nix";
           args = [ "run" "github:utensils/mcp-nixos" "--" ];
         };
+        # nixpkgs build, wrapped to use the Nix-built browsers
+        playwright.command = "${pkgs.playwright-mcp}/bin/playwright-mcp";
       };
     };
 
