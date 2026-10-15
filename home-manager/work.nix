@@ -12,6 +12,19 @@
     };
   };
 
+  # glvnd picks NVIDIA EGL first, but cosmic-comp composites on the Intel iGPU and
+  # sometimes fails to import wezterm's buffers ("import for wrong devices"), which freezes it.
+  programs.wezterm.package = pkgs.symlinkJoin {
+    name = "wezterm-mesa-egl";
+    paths = [ pkgs.wezterm ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      for b in wezterm wezterm-gui; do
+        wrapProgram $out/bin/$b --set __EGL_VENDOR_LIBRARY_FILENAMES /run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json
+      done
+    '';
+  };
+
   # Slack development huddle - every Tuesday at 09:45
   systemd.user.services.slack-dev-huddle = {
     Unit.Description = "Join Slack development huddle";
