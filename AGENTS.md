@@ -8,6 +8,7 @@ NixOS + home-manager flake for `home-desktop` and `work-laptop`
 - `flake.nix`: hosts, `customPackagesOverlay`, home-manager `sharedModules`
 - `hosts/`, `modules/`: system config
 - `home-manager/common.nix`: shared user config; `work.nix` holds work-laptop extras (SOPS secrets)
+- `home-manager/claude-code.nix`: Claude Code package, settings, plugins, MCP servers and hooks (imported by `common.nix`)
 - `home-manager/dotfiles/`: config files linked into `~` (mostly `mkOutOfStoreSymlink`, so edits apply without a rebuild)
 - `packages/<name>/`: custom packages (`default.nix`, optional `hm-module.nix`)
 - `secrets/`: SOPS-encrypted; never decrypt or print them
