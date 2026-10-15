@@ -54,6 +54,10 @@
       # boost 1.91 + icu 78 need C++17 but these libs' configure forces gnu++11; drop once fixed upstream
       // prev.lib.genAttrs [ "libqxp" "libmspub" ] (n: prev.${n}.overrideAttrs { CXXFLAGS = "-std=gnu++17"; })
       // {
+        # upstream pnpmDeps hash is stale in nixpkgs 7fd4004; drop once fixed upstream
+        typescript-language-server = prev.typescript-language-server.overrideAttrs (old: {
+          pnpmDeps = old.pnpmDeps.overrideAttrs { outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4="; };
+        });
         # cosmic-applet-recorder = inputs.cosmic-applet-recorder.packages.${system}.default;
         # cosmic-applet-webcam-effects = inputs.cosmic-applet-webcam-effects.packages.${system}.default;
         # cosmic-ext-transcriber = inputs.cosmic-ext-transcriber.packages.${system}.default;
