@@ -2,6 +2,20 @@
 
 let
   dotfiles = "${config.home.homeDirectory}/nixos-config/home-manager/dotfiles";
+  # Claude Code PreToolUse hook: blocks shell/code-execution tools whose input mentions
+  # local secret files or loads .env implicitly (dotenv, loadEnvFile).
+  # Complements permissions.deny below, which only covers the built-in file tools.
+  # shortcut: matches names in the input text, so indirection (variables, '.e'+'nv') gets past it.
+  blockSecretReads = pkgs.writeShellScript "block-secret-reads" ''
+    input=$(${pkgs.jq}/bin/jq -r '.tool_input | .. | strings')
+    b='[^[:alnum:]_.-]'
+    secret='(\.env(\.[[:alnum:]_.-]+)?|application(-[[:alnum:]_.-]+)?-local\.(ya?ml|properties)|[[:alnum:]_.*-]*\.pem)'
+    loader='load_dotenv|dotenv_values|find_dotenv|dotenv/config|dotenv\.config|loadEnvFile'
+    if printf '%s' "$input" | ${pkgs.gnugrep}/bin/grep -qE "(^|$b)$secret($b|$)|$loader"; then
+      echo "Blocked: touches a local secret file (.env, application-local.*, *.pem) or loads .env. Ask the user instead." >&2
+      exit 2
+    fi
+  '';
 in
 {
   xdg = {
@@ -229,6 +243,14 @@ in
     activation.herdrClaudeIntegration = lib.hm.dag.entryAfter [ "claudeCodeSettings" ] ''
       run ${pkgs.herdr}/bin/herdr integration install claude
     '';
+    # Appended with jq rather than via settings: the settings merge replaces arrays and would drop herdr's PreToolUse hook.
+    activation.claudeBlockSecretReads = lib.hm.dag.entryAfter [ "herdrClaudeIntegration" ] ''
+      _settings="$HOME/.claude/settings.json"
+      ${pkgs.jq}/bin/jq --arg cmd "${blockSecretReads}" '
+        .hooks.PreToolUse = [(.hooks.PreToolUse // [])[] | select(any(.hooks[]?; .command | test("block-secret-reads")) | not)]
+          + [{matcher: "Bash|mcp__plugin_context-mode_context-mode__ctx_(execute|execute_file|batch_execute)", hooks: [{type: "command", command: $cmd}]}]
+      ' "$_settings" > "$_settings.tmp" && mv "$_settings.tmp" "$_settings"
+    '';
   };
   programs = {
     link-whisperer.enable = true;
@@ -248,6 +270,15 @@ in
           PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
           PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
         };
+        # Keep local secrets out of context. Only covers built-in file tools, not Bash.
+        permissions.deny = map (p: "Read(**/${p})") [
+          ".env"
+          ".env.*"
+          "application-local.*"
+          "application-*-local.*"
+          "*.pem"
+          "*.key"
+        ];
       };
 
       marketplaces = {
