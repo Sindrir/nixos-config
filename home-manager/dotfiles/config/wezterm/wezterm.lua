@@ -11,6 +11,8 @@ config.window_decorations = "NONE"
 config.hide_tab_bar_if_only_one_tab = true
 config.color_scheme = 'Gruvbox dark, hard (base16)' -- Optional: Change the color scheme
 config.font = wezterm.font("JetBrainsMono Nerd Font", {weight="Regular", stretch="Normal", style="Normal"})
+-- For terminal-browser, which renders via the kitty graphics protocol
+config.enable_kitty_graphics = true
 
 -- For claude, to be able to make newlines with Shift + Enter
 config.keys = {
