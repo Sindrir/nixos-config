@@ -20,8 +20,10 @@ home-manager (`~/nixos-config`). Shell is fish.
 
 ## System: NixOS
 
-Tools are not globally installed. If a project has `flake.nix` or `shell.nix`,
-use `nix develop` / `nix-shell` without `-p`. Otherwise use an ad-hoc shell:
+If the project has `flake.nix` or `shell.nix`, always run tools through
+`nix develop` / `nix-shell` (without `-p`), even if they're installed globally.
+Otherwise try the command directly (some tools are installed via home-manager),
+and if it's not found, use an ad-hoc shell:
 
 ```sh
 nix-shell -p maven jdk21 --run "mvn clean install"   # check pom.xml for JDK version
