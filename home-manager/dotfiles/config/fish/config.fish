@@ -42,7 +42,7 @@ end
 function nurse
     sudo -v
     set -l flake_dir /home/sindreo/nixos-config
-    if test -n "(git -C $flake_dir status --porcelain)"
+    if test -n "$(git -C $flake_dir status --porcelain)"
         set_color -o yellow
         echo -n "warning:" >&2
         set_color normal
@@ -52,7 +52,14 @@ function nurse
         echo "Use `nurse-fix` to automatically fix issues."
         return 1
     end
+    set -l hm_unit home-manager-$USER.service
+    set -l hm_before (systemctl show -P ActiveEnterTimestampMonotonic $hm_unit)
     sudo nixos-rebuild switch --impure --option warn-dirty false --flake $flake_dir#(hostname)
+    or return
+    # Unchanged generation means the unit didn't run, so plugins weren't updated.
+    if test (systemctl show -P ActiveEnterTimestampMonotonic $hm_unit) = $hm_before
+        sudo systemctl restart $hm_unit
+    end
 end
 alias qnurse="sudo nixos-rebuild switch --impure --flake /home/sindreo/nixos-config#(hostname)"
 alias furse="nix flake update --flake /home/sindreo/nixos-config"
