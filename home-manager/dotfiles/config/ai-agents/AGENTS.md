@@ -69,11 +69,6 @@ nix-shell -p cargo rustc --run "cargo build"
 
 ## Data and security (work)
 
-- Never read, print or search inside local secret/config files: `.env`,
-  `.env.*`, `application-local.yml`/`.yaml`/`.properties` and other
-  `*-local` Spring profiles, private keys (`*.pem`, `*.key`). This includes
-  `cat`, `grep`, `head` etc. via the shell. If you need to know what keys
-  they define, ask me.
 - Never ask for secrets, tokens or connection strings. If you see one, flag it
   and tell me to rotate it.
 - Patron data, loan records and user identifiers are personal data under GDPR.

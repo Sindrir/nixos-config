@@ -2,20 +2,6 @@
 
 let
   dotfiles = "${config.home.homeDirectory}/nixos-config/home-manager/dotfiles";
-  # Claude Code PreToolUse hook: blocks shell/code-execution tools whose input mentions
-  # local secret files or loads .env implicitly (dotenv, loadEnvFile).
-  # Complements permissions.deny below, which only covers the built-in file tools.
-  # shortcut: matches names in the input text, so indirection (variables, '.e'+'nv') gets past it.
-  blockSecretReads = pkgs.writeShellScript "block-secret-reads" ''
-    input=$(${pkgs.jq}/bin/jq -r '.tool_input | .. | strings')
-    b='[^[:alnum:]_.\\-]' # `\` excluded so regexes like process\.env pass
-    secret='(\.env(\.[[:alnum:]_.-]+)?|application(-[[:alnum:]_.-]+)?-local\.(ya?ml|properties|\*)|[[:alnum:]_.*-]*\.pem)'
-    loader='load_dotenv|dotenv_values|find_dotenv|dotenv/config|dotenv\.config|loadEnvFile'
-    if printf '%s' "$input" | ${pkgs.gnugrep}/bin/grep -qE "(^|$b)$secret($b|$)|$loader"; then
-      echo "Blocked: touches a local secret file (.env, application-local.*, *.pem) or loads .env. Ask the user instead." >&2
-      exit 2
-    fi
-  '';
 in
 {
   home = {
@@ -34,12 +20,12 @@ in
     activation.herdrClaudeIntegration = lib.hm.dag.entryAfter [ "claudeCodeSettings" ] ''
       run ${pkgs.herdr}/bin/herdr integration install claude
     '';
-    # Appended with jq rather than via settings: the settings merge replaces arrays and would drop herdr's PreToolUse hook.
-    activation.claudeBlockSecretReads = lib.hm.dag.entryAfter [ "herdrClaudeIntegration" ] ''
+    # The secret-read hook moved to the secret-guard plugin; drop the old Nix-store entry.
+    # shortcut: remove once every machine has switched since 2026-10-16.
+    activation.claudeDropOldSecretHook = lib.hm.dag.entryAfter [ "herdrClaudeIntegration" ] ''
       _settings="$HOME/.claude/settings.json"
-      ${pkgs.jq}/bin/jq --arg cmd "${blockSecretReads}" '
-        .hooks.PreToolUse = [(.hooks.PreToolUse // [])[] | select(any(.hooks[]?; .command | test("block-secret-reads")) | not)]
-          + [{matcher: "Bash|mcp__plugin_context-mode_context-mode__ctx_(execute|execute_file|batch_execute)", hooks: [{type: "command", command: $cmd}]}]
+      ${pkgs.jq}/bin/jq '
+        if .hooks.PreToolUse then .hooks.PreToolUse |= map(select(any(.hooks[]?; .command | test("block-secret-reads")) | not)) else . end
       ' "$_settings" > "$_settings.tmp" && mv "$_settings.tmp" "$_settings"
     '';
   };
@@ -58,7 +44,8 @@ in
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       };
-      # Keep local secrets out of context. Only covers built-in file tools, not Bash.
+      # Keep local secrets out of context. Covers the built-in file tools and IDE
+      # open-file/selection context; the secret-guard plugin covers Bash and code execution.
       permissions.deny = map (p: "Read(**/${p})") [
         ".env"
         ".env.*"
@@ -84,6 +71,13 @@ in
           repo = "DietrichGebert/ponytail";
         };
       };
+      # Internal NB repo; adding/updating it needs git access to the org.
+      "tekst-claude-plugin" = {
+        source = {
+          source = "github";
+          repo = "NationalLibraryOfNorway/tekst-claude-plugin";
+        };
+      };
     };
 
     plugins = {
@@ -101,6 +95,8 @@ in
       "context-mode@context-mode" = true;
       "ponytail@ponytail" = true;
       "claude-md-management@claude-plugins-official" = true;
+      # Blocks reading .env/application-local.*/keys via Bash, file tools and code execution
+      "secret-guard@tekst-claude-plugin" = true;
       # Runs `npx @playwright/mcp@latest`, whose downloaded browsers can't run
       # on NixOS; replaced by the playwright MCP server below. false (not
       # removed) so the settings merge disables it on machines that have it.
