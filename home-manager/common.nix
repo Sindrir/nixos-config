@@ -350,14 +350,14 @@ in
   # (VS Code sign-in, Compass connections) and hand-rolling PAM auto-unlock
   # (oo7-daemon --login) with no NixOS module precedent to build on.
 
-  # Vicinae configuration
-  programs.vicinae = {
-    enable = true;
-    systemd = {
-      enable = true;
-      autoStart = true;
-    };
-  };
+  # Vicinae configuration (disabled: rarely used and slow to build)
+  # programs.vicinae = {
+  #   enable = true;
+  #   systemd = {
+  #     enable = true;
+  #     autoStart = true;
+  #   };
+  # };
 
   xdg.desktopEntries = {
     # Custom desktop entry for MongoDB Compass for compability with keyring
