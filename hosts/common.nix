@@ -31,7 +31,15 @@
     };
 
     # v4l2loopback: virtual webcam device for webcam effects applet
-    extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+    # shortcut: kbuild on 6.18 runs depmod in modules_install, so the package ships
+    # modules.* index files that clash with the kernel's; drop once nixpkgs fixes it
+    extraModulePackages = [
+      (config.boot.kernelPackages.v4l2loopback.overrideAttrs (old: {
+        postInstall = (old.postInstall or "") + ''
+          rm -f $out/lib/modules/*/modules.*
+        '';
+      }))
+    ];
     kernelModules = [ "v4l2loopback" ];
     extraModprobeConfig = ''
       options v4l2loopback devices=1 video_nr=2 card_label="Virtual Webcam" exclusive_caps=1
