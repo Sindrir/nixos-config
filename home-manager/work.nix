@@ -31,7 +31,8 @@
     Service = {
       Type = "oneshot";
       ExecStartPre = "${pkgs.libnotify}/bin/notify-send -a 'Slack' -i dialog-information -t 5000 'Development Huddle' 'Joining Slack huddle...'";
-      ExecStart = "${pkgs.slack}/bin/slack 'slack://join-huddle?team=T0SNGK4R1&id=C0AENME6PGT'";
+      # Detach Slack into its own transient unit; running it here keeps this oneshot activating forever
+      ExecStart = "${pkgs.systemd}/bin/systemd-run --user --collect ${pkgs.slack}/bin/slack 'slack://join-huddle?team=T0SNGK4R1&id=C0AENME6PGT'";
     };
   };
   systemd.user.timers.slack-dev-huddle = {
